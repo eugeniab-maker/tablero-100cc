@@ -632,6 +632,19 @@ body[data-sec="mapa"] { --acc: var(--c-mapa); }
   .m-list, .sello-grid { grid-template-columns: 1fr; }
   .hb { grid-template-columns: 96px 1fr 28px; }
 }
+
+/* Mapa: selector de color y cobertura por provincia */
+.m-colorby { margin-bottom: 10px; gap: 6px; }
+.m-colorby .fl { min-width: 0; margin-right: 4px; }
+.m-colorby .fbtn { --c: var(--c-mapa); }
+.m-legend .lg-t { flex-basis: 100%; font-family: var(--f-title); font-weight: 800; font-size: 12px; color: var(--black); }
+.m-nota { flex-basis: 100%; font-size: 11.5px; color: var(--dgray); margin: 2px 0 0; }
+.hb.cob { grid-template-columns: 120px 1fr 92px; }
+.hb.cob .tr .c { background: var(--c-mapa); }
+.hb.cob .v { font-size: 12px; font-weight: 700; white-space: nowrap; }
+.hb.cob .v small { font-family: var(--f-body); font-weight: 500; color: var(--dgray); }
+.ch-nota { font-size: 11.5px; color: var(--dgray); margin-top: 8px; line-height: 1.4; }
+@media (max-width: 560px) { .hb.cob { grid-template-columns: 90px 1fr 84px; } }
 </style>
 </head>
 <body>
@@ -969,12 +982,14 @@ body[data-sec="mapa"] { --acc: var(--c-mapa); }
 
     <div class="m-layout">
       <div class="card m-map" id="m-map">
+        <div class="m-colorby frow" role="group" aria-labelledby="mcl"><span class="fl" id="mcl">Colorear provincias por</span><span data-render="mfColor" class="frow"></span></div>
         <div data-render="mapaSvg"></div>
         <div class="m-legend" data-render="mapaLeyenda"></div>
         <p class="m-aviso" data-render="mapaAviso" hidden></p>
         <div class="m-tip" id="m-tip" hidden></div>
       </div>
       <div class="m-side">
+        <div class="card chart"><h3 data-render="chCobT">Cobertura por provincia</h3><div data-render="chCob"></div><p class="ch-nota" data-render="chCobNota"></p></div>
         <div class="card chart"><h3>Reconocimientos por año</h3><div class="ch-legend"><span><i style="background:var(--c-cert)"></i>Certificación</span><span><i style="background:var(--c-sel)"></i>Sellos</span></div><div data-render="chAnio"></div></div>
         <div class="card chart"><h3>Por región</h3><div data-render="chRegion"></div></div>
         <div class="card chart"><h3>Por tamaño de ciudad</h3><div data-render="chTam"></div></div>
@@ -1038,7 +1053,7 @@ const FUENTES = {
   sellos:   { sheetId: "1S3xtEKzsL6jYjwXsxK7yyUNEjq4bOUwBz5SOTBPVmdI", sheet: "Mapa sellos" },
   // Sellos: Ciudad | Provincia | Entrega | Sello RIL otorgado | Fecha | Puntaje
   maestra:  { sheetId: "1S3xtEKzsL6jYjwXsxK7yyUNEjq4bOUwBz5SOTBPVmdI", sheet: "Ciudades" }
-  // Ciudades: Ciudad | Provincia | Región | Tamaño de ciudad | Partido político | Latitud | Longitud
+  // Ciudades: Ciudad | Provincia | Región | Población (Censo 2022) | Partido político | Latitud | Longitud  (el tamaño se calcula con la población)
 };
 
 /* =====================================================================
@@ -1192,6 +1207,25 @@ const CONTENIDO_SELLOS = {
     { valor: "Participantes", texto: "Todas las ciudades de Argentina que trabajen con RIL." }
   ],
   revocacion: "RIL se reserva el derecho de revocar el Sello RIL si el gobierno local abandona una práctica considerada criterio mínimo."
+};
+
+// Mapa: cobertura por provincia (base de referencia: Censo 2022, bloque CENSO_2022)
+const CENSO_CONFIG = {
+  corte: 10000,                                   // solo gobiernos locales con 10.000 hab. o más
+  unGobiernoLocal: ["Ciudad de Buenos Aires"],    // cuenta como 1 gobierno local (el censo la divide en 15 comunas)
+  // La población de cada ciudad se toma de la pestaña "Ciudades" (columna "Población (Censo 2022)").
+  // Solo si falta ese dato se busca en el listado del Censo incrustado, con estas equivalencias de nombre:
+  alias: { "General Madariaga": "General Juan Madariaga" }
+};
+// Escalas de color del mapa (mismos 5 tonos para las tres opciones)
+const MAPA_COLORES = ["#F7F3EC", "#E6DDD0", "#CFC2B0", "#B3A28C", "#907F69"];
+const MAPA_COLOREAR = {
+  cant: { boton: "Cantidad", titulo: "Ciudades reconocidas por provincia",
+    pasos: [[0, "Sin ciudades"], [1, "1 a 2"], [3, "3 a 5"], [6, "6 a 10"], [11, "11 o más"]] },
+  gl: { boton: "% de gobiernos locales", titulo: "% de gobiernos locales de 10.000 hab. o más con reconocimiento",
+    pasos: [[0, "0%"], [0.001, "Menos de 5%"], [5, "5 a 10%"], [10, "10 a 20%"], [20, "20% o más"]] },
+  pob: { boton: "% de población", titulo: "% de la población de esos gobiernos locales que vive en una ciudad reconocida",
+    pasos: [[0, "0%"], [0.001, "Menos de 15%"], [15, "15 a 30%"], [30, "30 a 50%"], [50, "50% o más"]] }
 };
 
 const RESPALDO_PREGUNTAS = {
@@ -1456,48 +1490,111 @@ const RESPALDO_MAESTRA = {
   fecha: "2026-09-23",
   // Copia de la pestaña "Ciudades"
   filas: [
-    ["Ciudad", "Provincia", "Región", "Tamaño de ciudad", "Partido político", "Latitud", "Longitud", "Observaciones"],
-    ["Alta Gracia", "Córdoba", "Pampeana", "B entre 50.000 y 150.000", "PJ", "-31,64979", "-64,42987", ""],
-    ["Concepción del Uruguay", "Entre Ríos", "Pampeana", "B entre 50.000 y 150.000", "PJ", "-32,48466", "-58,23212", ""],
-    ["Concordia", "Entre Ríos", "Pampeana", "A más de 150.000", "PJ", "-31,39745", "-58,0172", ""],
-    ["Córdoba", "Córdoba", "Pampeana", "A más de 150.000", "PJ", "-31,41505", "-64,17911", ""],
-    ["Despeñaderos", "Córdoba", "Pampeana", "D entre 1.000 y 10.000", "Verificar", "-31,81428", "-64,29478", "Partido político a verificar."],
-    ["Escobar", "Buenos Aires", "Pampeana", "A más de 150.000", "PJ", "-34,34547", "-58,79281", ""],
-    ["General Madariaga", "Buenos Aires", "Pampeana", "B entre 50.000 y 150.000", "PJ", "-37,00196", "-57,13584", ""],
-    ["General Pico", "La Pampa", "Pampeana", "B entre 50.000 y 150.000", "PJ", "-35,6593", "-63,75787", ""],
-    ["Godoy Cruz", "Mendoza", "Cuyo", "A más de 150.000", "UCR", "-32,92965", "-68,84493", ""],
-    ["Jesús María", "Córdoba", "Pampeana", "C entre 10.000 y 50.000", "Libertad Avanza", "-30,97613", "-64,09579", ""],
-    ["Junín", "Buenos Aires", "Pampeana", "B entre 50.000 y 150.000", "PRO", "-34,59394", "-60,94643", ""],
-    ["Laboulaye", "Córdoba", "Pampeana", "C entre 10.000 y 50.000", "Verificar", "-34,12863", "-63,3907", "Partido político a verificar."],
-    ["Lobería", "Buenos Aires", "Pampeana", "C entre 10.000 y 50.000", "UCR", "-38,16338", "-58,78185", ""],
-    ["Luján", "Buenos Aires", "Pampeana", "B entre 50.000 y 150.000", "PJ", "-34,56685", "-59,11451", ""],
-    ["Luján de Cuyo", "Mendoza", "Cuyo", "A más de 150.000", "UCR", "-33,03455", "-68,88458", ""],
-    ["Maipú", "Mendoza", "Cuyo", "A más de 150.000", "PJ", "-32,98116", "-68,79517", ""],
-    ["Mendoza", "Mendoza", "Cuyo", "A más de 150.000", "UCR", "-32,88973", "-68,84444", ""],
-    ["Morteros", "Córdoba", "Pampeana", "C entre 10.000 y 50.000", "Verificar", "-30,71067", "-62,00724", "Partido político a verificar."],
-    ["Oberá", "Misiones", "NEA", "B entre 50.000 y 150.000", "Frente Renovador de la Concordia", "-27,48679", "-55,12006", ""],
-    ["Pilar", "Buenos Aires", "Pampeana", "A más de 150.000", "PJ", "-34,45698", "-58,91391", ""],
-    ["Pinamar", "Buenos Aires", "Pampeana", "C entre 10.000 y 50.000", "PRO", "-37,11382", "-56,85808", ""],
-    ["Posadas", "Misiones", "NEA", "A más de 150.000", "Frente Renovador de la Concordia", "-27,36643", "-55,89398", ""],
-    ["Rosario", "Santa Fe", "Pampeana", "A más de 150.000", "Creo", "-32,94721", "-60,63318", ""],
-    ["Río Cuarto", "Córdoba", "Pampeana", "A más de 150.000", "PJ", "-33,12384", "-64,349", ""],
-    ["San Antonio de Areco", "Buenos Aires", "Pampeana", "C entre 10.000 y 50.000", "PJ", "-34,24364", "-59,47365", ""],
-    ["San Fernando del Valle de Catamarca", "Catamarca", "NOA", "A más de 150.000", "PJ", "-28,46901", "-65,77892", ""],
-    ["San Francisco", "Córdoba", "Pampeana", "B entre 50.000 y 150.000", "PJ", "-31,42494", "-62,08388", ""],
-    ["San Isidro", "Buenos Aires", "GBA", "A más de 150.000", "PRO", "-34,46988", "-58,51129", ""],
-    ["San Justo", "Santa Fe", "Pampeana", "C entre 10.000 y 50.000", "Verificar", "-30,78917", "-60,5933", "Partido político a verificar."],
-    ["San Miguel", "Buenos Aires", "GBA", "A más de 150.000", "PRO", "-34,54313", "-58,7092", ""],
-    ["San Miguel de Tucumán", "Tucumán", "NOA", "A más de 150.000", "PJ", "-26,83039", "-65,20378", ""],
-    ["San Nicolás", "Buenos Aires", "Pampeana", "A más de 150.000", "PRO", "-33,3384", "-60,2215", ""],
-    ["Santa Rosa", "Mendoza", "Cuyo", "C entre 10.000 y 50.000", "PJ", "-33,25407", "-68,15066", ""],
-    ["Tandil", "Buenos Aires", "Pampeana", "A más de 150.000", "UCR", "-37,3287", "-59,1369", ""],
-    ["Tres de Febrero", "Buenos Aires", "GBA", "A más de 150.000", "PJ", "-34,60794", "-58,56394", ""],
-    ["Venado Tuerto", "Santa Fe", "Pampeana", "B entre 50.000 y 150.000", "UCR", "-33,7455", "-61,96873", ""],
-    ["Villa Allende", "Córdoba", "Pampeana", "C entre 10.000 y 50.000", "PJ", "-31,29365", "-64,2977", "Tamaño: la base tenía B y C; se usa C (confirmado)."],
-    ["Villa Ascasubi", "Córdoba", "Pampeana", "D entre 1.000 y 10.000", "Verificar", "-32,16274", "-63,89242", "Partido político a verificar."],
-    ["Villa General Belgrano", "Córdoba", "Pampeana", "C entre 10.000 y 50.000", "Verificar", "-31,97649", "-64,55905", "Partido político a verificar."],
-    ["Yerba Buena", "Tucumán", "NOA", "B entre 50.000 y 150.000", "UCR", "-26,81082", "-65,28343", ""]
+    ["Ciudad", "Provincia", "Región", "Población (Censo 2022)", "Partido político", "Latitud", "Longitud", "Observaciones"],
+    ["Alta Gracia", "Córdoba", "Pampeana", "60.373", "PJ", "-31,64979", "-64,42987", ""],
+    ["Concepción del Uruguay", "Entre Ríos", "Pampeana", "80.207", "PJ", "-32,48466", "-58,23212", ""],
+    ["Concordia", "Entre Ríos", "Pampeana", "157.323", "PJ", "-31,39745", "-58,0172", ""],
+    ["Córdoba", "Córdoba", "Pampeana", "1.505.250", "PJ", "-31,41505", "-64,17911", ""],
+    ["Despeñaderos", "Córdoba", "Pampeana", "7.608", "Verificar", "-31,81428", "-64,29478", "Partido político a verificar."],
+    ["Escobar", "Buenos Aires", "Pampeana", "255.432", "PJ", "-34,34547", "-58,79281", ""],
+    ["General Madariaga", "Buenos Aires", "Pampeana", "23.019", "PJ", "-37,00196", "-57,13584", ""],
+    ["General Pico", "La Pampa", "Pampeana", "67.240", "PJ", "-35,6593", "-63,75787", ""],
+    ["Godoy Cruz", "Mendoza", "Cuyo", "195.183", "UCR", "-32,92965", "-68,84493", ""],
+    ["Jesús María", "Córdoba", "Pampeana", "37.498", "Libertad Avanza", "-30,97613", "-64,09579", ""],
+    ["Junín", "Buenos Aires", "Pampeana", "101.762", "PRO", "-34,59394", "-60,94643", ""],
+    ["Laboulaye", "Córdoba", "Pampeana", "22.846", "Verificar", "-34,12863", "-63,3907", "Partido político a verificar."],
+    ["Lobería", "Buenos Aires", "Pampeana", "18.232", "UCR", "-38,16338", "-58,78185", ""],
+    ["Luján", "Buenos Aires", "Pampeana", "111.365", "PJ", "-34,56685", "-59,11451", ""],
+    ["Luján de Cuyo", "Mendoza", "Cuyo", "172.503", "UCR", "-33,03455", "-68,88458", ""],
+    ["Maipú", "Mendoza", "Cuyo", "214.412", "PJ", "-32,98116", "-68,79517", ""],
+    ["Mendoza", "Mendoza", "Cuyo", "122.840", "UCR", "-32,88973", "-68,84444", ""],
+    ["Morteros", "Córdoba", "Pampeana", "20.400", "Verificar", "-30,71067", "-62,00724", "Partido político a verificar."],
+    ["Oberá", "Misiones", "NEA", "79.528", "Frente Renovador de la Concordia", "-27,48679", "-55,12006", ""],
+    ["Pilar", "Buenos Aires", "Pampeana", "395.072", "PJ", "-34,45698", "-58,91391", ""],
+    ["Pinamar", "Buenos Aires", "Pampeana", "40.259", "PRO", "-37,11382", "-56,85808", ""],
+    ["Posadas", "Misiones", "NEA", "393.367", "Frente Renovador de la Concordia", "-27,36643", "-55,89398", ""],
+    ["Rosario", "Santa Fe", "Pampeana", "1.029.619", "Creo", "-32,94721", "-60,63318", ""],
+    ["Río Cuarto", "Córdoba", "Pampeana", "180.756", "PJ", "-33,12384", "-64,349", ""],
+    ["San Antonio de Areco", "Buenos Aires", "Pampeana", "26.582", "PJ", "-34,24364", "-59,47365", ""],
+    ["San Fernando del Valle de Catamarca", "Catamarca", "NOA", "182.203", "PJ", "-28,46901", "-65,77892", ""],
+    ["San Francisco", "Córdoba", "Pampeana", "69.047", "PJ", "-31,42494", "-62,08388", ""],
+    ["San Isidro", "Buenos Aires", "GBA", "298.777", "PRO", "-34,46988", "-58,51129", ""],
+    ["San Justo", "Santa Fe", "Pampeana", "25.080", "Verificar", "-30,78917", "-60,5933", "Partido político a verificar."],
+    ["San Miguel", "Buenos Aires", "GBA", "326.215", "PRO", "-34,54313", "-58,7092", ""],
+    ["San Miguel de Tucumán", "Tucumán", "NOA", "588.240", "PJ", "-26,83039", "-65,20378", ""],
+    ["San Nicolás", "Buenos Aires", "Pampeana", "160.882", "PRO", "-33,3384", "-60,2215", ""],
+    ["Santa Rosa", "Mendoza", "Cuyo", "19.410", "PJ", "-33,25407", "-68,15066", ""],
+    ["Tandil", "Buenos Aires", "Pampeana", "150.162", "UCR", "-37,3287", "-59,1369", ""],
+    ["Tres de Febrero", "Buenos Aires", "GBA", "366.377", "PJ", "-34,60794", "-58,56394", ""],
+    ["Venado Tuerto", "Santa Fe", "Pampeana", "82.757", "UCR", "-33,7455", "-61,96873", ""],
+    ["Villa Allende", "Córdoba", "Pampeana", "36.822", "PJ", "-31,29365", "-64,2977", "Tamaño: la base tenía B y C; se usa C (confirmado)."],
+    ["Villa Ascasubi", "Córdoba", "Pampeana", "2.730", "Verificar", "-32,16274", "-63,89242", "Partido político a verificar."],
+    ["Villa General Belgrano", "Córdoba", "Pampeana", "11.838", "Verificar", "-31,97649", "-64,55905", "Partido político a verificar."],
+    ["Yerba Buena", "Tucumán", "NOA", "102.023", "UCR", "-26,81082", "-65,28343", ""]
   ]
+};
+
+/* ---------------------------------------------------------------------
+   CENSO 2022 (INDEC) — base de referencia para la cobertura del mapa
+   Fuente: "Total de viviendas y población según gobierno local", Censo Nacional
+   de Población, Hogares y Viviendas 2022 (archivo actualizado por INDEC el 03/06/2026).
+   provincias: [Provincia, población total, gobiernos locales, GL ≥10.000 hab., población en GL ≥10.000]
+   gobiernosLocales: GL con 10.000 hab. o más, por provincia: [nombre, población]
+   --------------------------------------------------------------------- */
+const CENSO_2022 = {
+  fecha: "2026-06-03",
+  provincias: [
+    ["Buenos Aires", 17523996, 135, 124, 17449760],
+    ["Catamarca", 429562, 36, 9, 336486],
+    ["Chaco", 1129606, 70, 24, 934679],
+    ["Chubut", 592621, 47, 9, 535851],
+    ["Ciudad de Buenos Aires", 3121707, 15, 15, 3121707],
+    ["Corrientes", 1212696, 75, 21, 1021680],
+    ["Córdoba", 3840905, 427, 56, 2995469],
+    ["Entre Ríos", 1425578, 240, 26, 1143524],
+    ["Formosa", 607419, 37, 11, 472369],
+    ["Jujuy", 811611, 63, 12, 686972],
+    ["La Pampa", 361859, 80, 6, 239528],
+    ["La Rioja", 383865, 18, 6, 329527],
+    ["Mendoza", 2043540, 18, 18, 2043540],
+    ["Misiones", 1278873, 77, 26, 1057621],
+    ["Neuquén", 710814, 57, 13, 621655],
+    ["Río Negro", 750768, 74, 13, 626136],
+    ["Salta", 1441351, 60, 29, 1322418],
+    ["San Juan", 822853, 19, 15, 792345],
+    ["San Luis", 542069, 67, 6, 417517],
+    ["Santa Cruz", 337226, 20, 8, 286854],
+    ["Santa Fe", 3544908, 365, 51, 2864276],
+    ["Santiago del Estero", 1060906, 165, 10, 621597],
+    ["Tierra del Fuego", 185732, 3, 2, 178692],
+    ["Tucumán", 1731820, 112, 23, 1393244]
+  ],
+  gobiernosLocales: {
+    "Buenos Aires": [["25 de Mayo",35563],["9 de Julio",52607],["Adolfo Alsina",17552],["Adolfo Gonzales Chaves",12914],["Alberti",12982],["Almirante Brown",584827],["Arrecifes",32215],["Avellaneda",367554],["Ayacucho",21977],["Azul",75905],["Bahía Blanca",336557],["Balcarce",48982],["Baradero",40002],["Benito Juárez",22292],["Berazategui",358712],["Berisso",100930],["Bolívar",37594],["Bragado",46504],["Brandsen",32448],["Campana",110566],["Capitán Sarmiento",15965],["Carlos Casares",23100],["Carlos Tejedor",14079],["Carmen de Areco",17499],["Cañuelas",70684],["Chacabuco",52729],["Chascomús",42452],["Chivilcoy",70839],["Colón",27504],["Coronel Dorrego",15968],["Coronel Pringles",24420],["Coronel Suárez",42110],["Coronel de Marina Leonardo Rosales",67503],["Daireaux",18422],["Dolores",32032],["Ensenada",63997],["Escobar",256268],["Esteban Echeverría",338480],["Exaltación de la Cruz",40159],["Ezeiza",201511],["Florencio Varela",496433],["Florentino Ameghino",10790],["General Alvarado",45526],["General Alvear",12631],["General Arenales",16350],["General Belgrano",20791],["General Juan Madariaga",22624],["General La Madrid",11618],["General Las Heras",18022],["General Paz",14207],["General Pinto",12941],["General Pueyrredón",667082],["General Rodríguez",142709],["General San Martín",450518],["General Viamonte",22649],["General Villegas",35251],["Guaminí",11801],["Hipólito Yrigoyen",10661],["Hurlingham",185641],["Ituzaingó",180232],["José C. Paz",326992],["Junín",103787],["La Costa",100689],["La Matanza",1841247],["La Plata",768547],["Lanús",461267],["Laprida",11646],["Las Flores",27239],["Leandro N. Alem",17266],["Lincoln",45506],["Lobería",18243],["Lobos",41760],["Lomas de Zamora",690480],["Luján",111251],["Magdalena",26613],["Maipú",11323],["Malvinas Argentinas",350674],["Mar Chiquita",33110],["Marcos Paz",67011],["Mercedes",72980],["Merlo",582486],["Monte",24868],["Moreno",576632],["Morón",331183],["Navarro",19899],["Necochea",102110],["Olavarría",125751],["Patagones",37646],["Pehuajó",44783],["Pergamino",115340],["Pilar",394754],["Pinamar",39449],["Presidente Perón",102106],["Puan",16613],["Punta Indio",12297],["Quilmes",633391],["Ramallo",39730],["Rauch",16635],["Rivadavia",19849],["Rojas",25627],["Roque Pérez",13977],["Saavedra",22347],["Saladillo",35656],["Salto",39425],["San Andrés de Giles",26510],["San Antonio de Areco",26897],["San Fernando",171616],["San Isidro",297282],["San Miguel",328835],["San Nicolás",168041],["San Pedro",68613],["San Vicente",98215],["Suipacha",11786],["Tandil",145575],["Tapalqué",10783],["Tigre",446949],["Tornquist",14810],["Trenque Lauquen",49499],["Tres Arroyos",62426],["Tres de Febrero",364176],["Vicente López",282280],["Villa Gesell",37463],["Villarino",32717],["Zárate",132221]],
+    "Catamarca": [["Andalgalá",16513],["Belén",16581],["Fray Mamerto Esquiú",14625],["Huillapima",11873],["Recreo",18348],["San Fernando del Valle de Catamarca",186947],["Santa María",20999],["Tinogasta",16571],["Valle Viejo",34029]],
+    "Chaco": [["Barranqueras",59846],["Campo Largo",11448],["Charata",34598],["Corzuela",12807],["Fontana",40660],["General Pinedo",16950],["General San Martín",35790],["Juan José Castelli",31103],["La Leonesa",12609],["Las Breñas",30258],["Machagai",31504],["Pampa del Indio",18284],["Pampa del Infierno",12089],["Presidencia Roque Sáenz Peña",101960],["Presidencia de la Plaza",13956],["Puerto Tirol",12196],["Puerto Vilelas",11150],["Quitilipi",32642],["Resistencia",300640],["San Bernardo",12862],["Taco Pozo",11226],["Tres Isletas",26416],["Villa Berthet",14161],["Villa Ángela",49524]],
+    "Chubut": [["Comodoro Rivadavia",201854],["Esquel",37261],["Lago Puelo",10083],["Puerto Madryn",102505],["Rada Tilly",13494],["Rawson",38652],["Sarmiento",14394],["Trelew",106796],["Trevelin",10812]],
+    "Ciudad de Buenos Aires": [["Comuna 1",223554],["Comuna 10",173004],["Comuna 11",204601],["Comuna 12",236887],["Comuna 13",264385],["Comuna 14",248635],["Comuna 15",196876],["Comuna 2",161645],["Comuna 3",196240],["Comuna 4",229240],["Comuna 5",194271],["Comuna 6",203043],["Comuna 7",215896],["Comuna 8",204367],["Comuna 9",169063]],
+    "Corrientes": [["Bella Vista",41358],["Corrientes",430170],["Curuzú Cuatiá",44294],["Empedrado",14903],["Esquina",35339],["Gobernador Ingeniero Valentín Virasoro",37202],["Goya",98514],["Itatí",10345],["Ituzaingó",27487],["La Cruz",10663],["Mburucuyá",11568],["Mercedes",44953],["Monte Caseros",31474],["Paso de los Libres",53969],["Saladas",22347],["San Luis del Palmar",20491],["San Roque",10699],["Santa Lucía",20163],["Santa Rosa",13480],["Santo Tomé",31879],["Sauce",10382]],
+    "Córdoba": [["Almafuerte",13235],["Alta Gracia",60695],["Arroyito",28161],["Bell Ville",37995],["Brinkmann",11419],["Capilla del Monte",13031],["Colonia Caroya",25261],["Corral de Bustos Ifflinger",11062],["Cosquín",25461],["Cruz del Eje",37001],["Córdoba",1505250],["Deán Funes",25360],["Estación Juárez Celman",13890],["General Cabrera",14473],["General Deheza",12711],["Hernando",11897],["Jesús María",36582],["La Calera",45689],["La Carlota",14571],["La Falda",16937],["Laboulaye",22609],["Las Higueras",10343],["Las Varillas",18849],["Leones",11433],["Malagueño",25918],["Malvinas Argentinas",16122],["Marcos Juárez",28706],["Mendiolaza",14718],["Mina Clavero",11955],["Montecristo",14938],["Morteros",20729],["Oliva",13179],["Oncativo",14702],["Pilar",18674],["Río Ceballos",27136],["Río Cuarto",182038],["Río Primero",11726],["Río Segundo",22258],["Río Tercero",53416],["Saldán",12891],["Salsipuedes",15997],["San Francisco",69391],["Santa María de Punilla",12108],["Santa Rosa de Calamuchita",19125],["Tanti",11035],["Unquillo",25240],["Vicuña Mackenna",11712],["Villa Allende",36982],["Villa Carlos Paz",71719],["Villa Dolores",34005],["Villa General Belgrano",11775],["Villa María",97815],["Villa Nueva",26359],["Villa de Soto",10577],["Villa del Rosario",17680],["Villa del Totoral",10928]],
+    "Entre Ríos": [["Basavilbaso",10683],["Chajarí",41884],["Colón",31744],["Concepción del Uruguay",86735],["Concordia",180325],["Crespo",24570],["Diamante",21562],["Federación",19938],["Federal",21638],["General Ramírez",10796],["Gualeguay",48163],["Gualeguaychú",95337],["La Paz",30858],["Nogoyá",27493],["Paraná",271304],["Rosario del Tala",16813],["San Benito",16830],["San José",22309],["San José de Feliciano",14440],["San Salvador",16251],["Santa Elena",20538],["Urdinarrain",10397],["Viale",11204],["Victoria",36973],["Villa Elisa",12524],["Villaguay",42215]],
+    "Formosa": [["Clorinda",60171],["Comandante Fontana",10206],["El Chorro",16063],["El Colorado",18201],["Formosa",264452],["Ibarreta",11722],["Ingeniero Guillermo Nicasio Juárez",17042],["Laguna Blanca",14583],["Las Lomitas",22186],["Palo Santo",10365],["Pirané",27378]],
+    "Jujuy": [["Abra Pampa",12513],["Calilegua",12318],["El Carmen",22438],["Fraile Pintado",17682],["Humahuaca",15992],["La Quiaca",22211],["Libertador General San Martín",48518],["Monterrico",23878],["Palpalá",65541],["Perico",61420],["San Pedro de Jujuy",72015],["San Salvador de Jujuy",312446]],
+    "La Pampa": [["Colonia 25 de Mayo",10743],["Eduardo Castex",10568],["General Acha",15522],["General Pico",67585],["Santa Rosa",117201],["Toay",17909]],
+    "La Rioja": [["Arauco",16257],["Chamical",15666],["Chilecito",58798],["General Felipe Varela",11372],["La Rioja",211651],["Rosario Vera Peñaloza",15783]],
+    "Mendoza": [["General Alvear",52584],["Godoy Cruz",195159],["Guaymallén",321966],["Junín",46604],["La Paz",12086],["Las Heras",234401],["Lavalle",47167],["Luján de Cuyo",175056],["Maipú",219402],["Malargüe",32717],["Mendoza",127160],["Rivadavia",63724],["San Carlos",39869],["San Martín",139792],["San Rafael",215020],["Santa Rosa",19382],["Tunuyán",60171],["Tupungato",41280]],
+    "Misiones": [["25 de Mayo",13988],["Apóstoles",34979],["Aristóbulo del Valle",20475],["Bernardo de Irigoyen",14920],["Campo Grande",14170],["Campo Viera",10570],["Candelaria",18112],["Colonia Wanda",17891],["Comandante Andresito",19770],["Dos de Mayo",18857],["El Soberbio",27166],["Eldorado",75692],["Garupá",63520],["Jardín América",27581],["Leandro N. Alem",32289],["Montecarlo",26027],["Oberá",77803],["Posadas",328879],["Puerto Esperanza",19237],["Puerto Iguazú",54903],["Puerto Rico",23526],["San Antonio",10880],["San Ignacio",14073],["San Javier",15557],["San Pedro",26762],["San Vicente",49994]],
+    "Neuquén": [["Centenario",49039],["Chos Malal",15655],["Cutral Co",40418],["Junín de los Andes",19108],["Neuquén",289527],["Plaza Huincul",16046],["Plottier",52433],["Rincón de los Sauces",24304],["San Martín de los Andes",37381],["San Patricio del Chañar",10891],["Senillosa",11733],["Villa La Angostura",14422],["Zapala",40698]],
+    "Río Negro": [["Allen",31941],["Catriel",24220],["Choele Choel",13657],["Cinco Saltos",27615],["Cipolletti",105647],["El Bolsón",24303],["General Fernández Oro",15808],["General Roca",109366],["Río Colorado",16309],["San Antonio Oeste",26718],["San Carlos de Bariloche",136528],["Viedma",60903],["Villa Regina",33121]],
+    "Salta": [["Aguaray",17325],["Apolinario Saravia",11669],["Cafayate",17829],["Campo Quijano",23216],["Chicoana",10537],["Colonia Santa Rosa",19572],["El Carril",14192],["El Galpón",10105],["El Quebrachal",13877],["Embarcación",31979],["General Güemes",39459],["General Mosconi",19142],["Hipólito Yrigoyen",12857],["Joaquín V. González",22660],["La Merced",14303],["Las Lajitas",14720],["Pichanal",29653],["Profesor Salvador Mazza",26995],["Rivadavia Banda Norte",12401],["Rivadavia Banda Sur",10353],["Rosario de Lerma",27812],["Rosario de la Frontera",30660],["Salta",594772],["San José de Metán",35598],["San José de los Cerrillos",41646],["San Lorenzo",32932],["San Ramón de la Nueva Orán",91215],["Santa Victoria Este",15359],["Tartagal",79580]],
+    "San Juan": [["25 de Mayo",20824],["9 de Julio",12514],["Albardón",31284],["Angaco",10176],["Calingasta",11034],["Caucete",44047],["Chimbas",105627],["Jáchal",25297],["Pocito",72915],["Rawson",136617],["Rivadavia",101666],["San Juan",115390],["San Martín",15037],["Santa Lucía",62729],["Sarmiento",27188]],
+    "San Luis": [["Juana Koslay",19696],["Justo Daract",11807],["La Punta",21873],["San Luis",206921],["Villa Mercedes",132262],["Villa de Merlo",24958]],
+    "Santa Cruz": [["Caleta Olivia",56556],["El Calafate",23034],["Las Heras",24728],["Pico Truncado",25346],["Puerto Deseado",16871],["Puerto San Julián",12574],["Río Gallegos",116000],["Río Turbio",11745]],
+    "Santa Fe": [["Armstrong",12973],["Arroyo Seco",24632],["Avellaneda",29314],["Calchaquí",12830],["Capitán Bermúdez",30948],["Carcarañá",17449],["Casilda",38903],["Cañada de Gómez",32553],["Ceres",16443],["Coronda",21643],["El Trébol",12510],["Esperanza",47228],["Firmat",20682],["Fray Luis Beltrán",18536],["Frontera",10091],["Funes",38390],["Granadero Baigorria",44392],["Gálvez",20307],["Helvecia",10184],["Laguna Paiva",13695],["Las Parejas",14582],["Las Rosas",14480],["Las Toscas",12865],["Monte Vera",10037],["Pueblo Esther",12693],["Puerto General San Martín",17969],["Pérez",32459],["Rafaela",102236],["Reconquista",88306],["Recreo",19060],["Roldán",30785],["Rosario",1037710],["Rufino",19301],["San Carlos Centro",12397],["San Cristóbal",15448],["San Javier",17504],["San Jorge",19673],["San José del Rincón",14074],["San Justo",26489],["San Lorenzo",51180],["Santa Fe",408572],["Santo Tomé",75426],["Sauce Viejo",14425],["Sunchales",23528],["Tostado",17057],["Totoras",11736],["Venado Tuerto",83177],["Vera",22747],["Villa Constitución",52759],["Villa Gobernador Gálvez",92241],["Villa Ocampo",19657]],
+    "Santiago del Estero": [["Añatuya",30026],["Clodomira",12625],["Fernández",14791],["Frías",33605],["La Banda",128834],["Loreto",14642],["Monte Quemado",17418],["Quimilí",19299],["Santiago del Estero",311487],["Termas de Río Hondo",38870]],
+    "Tierra del Fuego": [["Río Grande",98794],["Ushuaia",79898]],
+    "Tucumán": [["Aguilares",40668],["Alderetes",68399],["Banda del Río Salí",77962],["Bella Vista",21562],["Cevil Redondo",21527],["Concepción",58104],["Delfín Gallo",11212],["El Manantial",21201],["Famaillá",42702],["Juan Bautista Alberdi",28770],["Las Talitas",69605],["Los Ralos",11943],["Monteros",32081],["Ranchillos y San Miguel",14249],["San Andrés",10668],["San Isidro de Lules",37566],["San Miguel de Tucumán",601888],["San Pablo y Villa Nougués",16123],["Santa Ana",15009],["Simoca",13241],["Tafí Viejo",85578],["Trancas",10909],["Yerba Buena",82277]]
+  }
 };
 
 </script>
@@ -1882,6 +1979,11 @@ const MAPA_AR = {"proj": {"minx": -73.568399, "maxy": -21.786938, "k": 0.7880107
   const pctDe = (v) => { const s = String(v ?? "").trim(); if (!s) return null; let n = numComa(s.replace("%", "")); if (isNaN(n)) return null; if (!s.includes("%") && n <= 1) n *= 100; return Math.round(n * 10) / 10; };
   const tamKey = (t) => { const s = String(t ?? "").trim(); const m = s.match(/^([A-D])\b/i); if (m) return m[1].toUpperCase(); const n = norm(s);
     if (/mas de 150/.test(n)) return "A"; if (/50\.?000 y 150/.test(n)) return "B"; if (/10\.?000 y 50/.test(n)) return "C"; if (/1\.?000 y 10/.test(n)) return "D"; return ""; };
+  // Población: acepta "1.505.250", "1505250" o "1,505,250"
+  const pobDe = (v) => { const d = String(v ?? "").replace(/[^\d]/g, ""); return d ? +d : null; };
+  // Tamaño a partir de la población (mismos cortes que TAMANIOS)
+  const tamDePob = (p) => (p == null ? "" : p > 150000 ? "A" : p >= 50000 ? "B" : p >= 10000 ? "C" : "D");
+  const fmtPob = (p) => p.toLocaleString("es-AR") + " hab.";
   const tamLabel = (k) => (TAMANIOS.find((t) => t.k === k) || {}).label || "Sin dato";
   const partidoDe = (p) => { const s = String(p ?? "").trim(); return !s || norm(s) === "verificar" ? "Sin dato" : s; };
   const regionDe = (r) => { const k = norm(r); return REGIONES.find((x) => norm(x) === k) || (String(r || "").trim() || "Sin dato"); };
@@ -1903,12 +2005,15 @@ const MAPA_AR = {"proj": {"minx": -73.568399, "maxy": -21.786938, "k": 0.7880107
     const h = rows[hi].map(norm);
     const ix = (f) => h.findIndex(f);
     const iC = ix((c) => c === "ciudad"), iP = ix((c) => c.includes("provincia")), iR = ix((c) => c.includes("region")),
-      iT = ix((c) => c.includes("tamano")), iPa = ix((c) => c.includes("partido")), iLa = ix((c) => c.startsWith("lat")), iLo = ix((c) => c.startsWith("lon"));
+      iT = ix((c) => c.includes("tamano")), iPa = ix((c) => c.includes("partido")), iLa = ix((c) => c.startsWith("lat")), iLo = ix((c) => c.startsWith("lon")),
+      iPob = ix((c) => c.startsWith("poblacion"));
     const m = new Map();
     rows.slice(hi + 1).forEach((r) => {
       const ciudad = String(r[iC] ?? "").replace(/\s+/g, " ").trim(); if (!ciudad) return;
       const lat = numComa(r[iLa]), lon = numComa(r[iLo]);
-      m.set(norm(ciudad), { ciudad, provincia: String(r[iP] ?? "").trim(), region: regionDe(r[iR]), tam: tamKey(r[iT]), partido: partidoDe(r[iPa]),
+      const pob = iPob >= 0 ? pobDe(r[iPob]) : null;
+      m.set(norm(ciudad), { ciudad, provincia: String(r[iP] ?? "").trim(), region: regionDe(r[iR]), pob,
+        tam: (iT >= 0 && tamKey(r[iT])) || tamDePob(pob), partido: partidoDe(r[iPa]),
         lat: isNaN(lat) ? null : lat, lon: isNaN(lon) ? null : lon });
     });
     return m;
@@ -2093,12 +2198,45 @@ const MAPA_AR = {"proj": {"minx": -73.568399, "maxy": -21.786938, "k": 0.7880107
     opciones($("#mf-anio"), uniq(recs.map((r) => r.anio)).sort().map((y) => [y, y]), f.anio, "Todos");
     opciones($("#mf-tam"), TAMANIOS.filter((t) => F.some((c) => c.tam === t.k)).map((t) => [t.k, t.label]), f.tam, "Todos");
     opciones($("#mf-sello"), statsSellos().lista.map((s) => [s.nombre, s.nombre]), f.sello, "Todas");
+    $('[data-render="mfColor"]').innerHTML = Object.entries(MAPA_COLOREAR).map(([k, m]) => `<button class="fbtn" data-mf-color="${k}" aria-pressed="${(f.color || "cant") === k}">${esc(m.boton)}</button>`).join("");
     const tipos = [["", "Todos"], ["cert", "Certificación"], ["sello", "Sellos temáticos"]];
     $('[data-render="mfTipo"]').innerHTML = tipos.map(([v, t]) => `<button class="fbtn" data-mf-tipo="${v}" aria-pressed="${(f.tipo || "") === v}"${v === "cert" ? ' style="--c:var(--c-cert)"' : v === "sello" ? ' style="--c:var(--c-sel)"' : ""}>${t}</button>`).join("");
   }
 
-  const ESCALA = [[0, "#F7F3EC", "Sin ciudades"], [1, "#E6DDD0", "1 a 2"], [3, "#CFC2B0", "3 a 5"], [6, "#B3A28C", "6 a 10"], [11, "#907F69", "11 o más"]];
-  const colorProv = (n) => { let c = ESCALA[0][1]; ESCALA.forEach(([min, col]) => { if (n >= min) c = col; }); return c; };
+  /* ---------- cobertura por provincia (Censo 2022) ---------- */
+  const CENSO = (() => {
+    const prov = new Map(), gl = new Map();
+    const uno = (p) => CENSO_CONFIG.unGobiernoLocal.some((x) => provKey(x) === provKey(p));
+    CENSO_2022.provincias.forEach(([p, pob, glT, gl10, pob10]) => prov.set(provKey(p), { nombre: p, pob, uno: uno(p), gl10: uno(p) ? 1 : gl10, pob10 }));
+    Object.entries(CENSO_2022.gobiernosLocales).forEach(([p, l]) => l.forEach(([n, pob]) => gl.set(provKey(p) + "|" + norm(n), pob)));
+    return { prov, gl };
+  })();
+  // Población de una ciudad para la cobertura (null si tiene menos de 10.000 hab. o no hay dato).
+  // Se toma de la columna "Población" de la pestaña "Ciudades"; si falta, del listado del Censo incrustado.
+  function poblacionCiudad(c) {
+    if (c.pob != null) return c.pob >= CENSO_CONFIG.corte ? c.pob : null;
+    const pk = provKey(c.provincia), pr = CENSO.prov.get(pk);
+    if (pr && pr.uno) return pr.pob10;
+    const nombre = CENSO_CONFIG.alias[c.ciudad] || c.ciudad;
+    return CENSO.gl.get(pk + "|" + norm(nombre)) ?? null;
+  }
+  function cobertura(recs) {
+    const out = new Map(), vistas = new Set();
+    CENSO.prov.forEach((v, pk) => out.set(pk, { n: 0, n10: 0, pob: 0, N: v.gl10, P: v.pob10 }));
+    recs.forEach((r) => {
+      if (vistas.has(r.key)) return; vistas.add(r.key);
+      const c = estado.fichas.get(r.key), pk = provKey(c.provincia);
+      if (!out.has(pk)) out.set(pk, { n: 0, n10: 0, pob: 0, N: 0, P: 0 });
+      const o = out.get(pk), pob = poblacionCiudad(c); o.n++;
+      if (pob != null && o.N) { o.n10++; o.pob += pob; }
+    });
+    out.forEach((o) => { o.n10 = Math.min(o.n10, o.N); o.gl = o.N ? (o.n10 / o.N) * 100 : 0; o.pobPct = o.P ? Math.min(100, (o.pob / o.P) * 100) : 0; });
+    return out;
+  }
+  const valorCob = (o, modo) => (modo === "gl" ? o.gl : modo === "pob" ? o.pobPct : o.n);
+  const colorProv = (v, modo) => { let c = MAPA_COLORES[0]; MAPA_COLOREAR[modo].pasos.forEach(([min], i) => { if (v >= min && (v > 0 || i === 0)) c = MAPA_COLORES[i]; }); return c; };
+  const pct1 = (v) => v.toLocaleString("es-AR", { minimumFractionDigits: 1, maximumFractionDigits: 1 }) + "%";
+  const txtCob = (o) => `${o.n10} de ${o.N} ${o.N === 1 ? "gobierno local" : "gobiernos locales"} de 10.000 hab. o más (${pct1(o.gl)})`;
   const proj = (lon, lat) => { const P = MAPA_AR.proj; return [(lon - P.minx) * P.k * P.sx, (P.maxy - lat) * P.sx]; };
   const simbolo = (x, y, r, tipo, extra) => { x = +x; y = +y; r = +r; const f = (n) => +n.toFixed(2); return tipo === "cert"
     ? `<path class="pt cert" d="M${f(x)} ${f(y - r * 1.25)}L${f(x + r * 1.25)} ${f(y)}L${f(x)} ${f(y + r * 1.25)}L${f(x - r * 1.25)} ${f(y)}Z" ${extra}/>`
@@ -2107,13 +2245,15 @@ const MAPA_AR = {"proj": {"minx": -73.568399, "maxy": -21.786938, "k": 0.7880107
   function renderMapa(recs) {
     const porCiudad = new Map();
     recs.forEach((r) => { if (!porCiudad.has(r.key)) porCiudad.set(r.key, []); porCiudad.get(r.key).push(r); });
-    const cnt = {};
-    porCiudad.forEach((rs, k) => { const p = provKey(estado.fichas.get(k).provincia); cnt[p] = (cnt[p] || 0) + 1; });
+    $("#m-tip").hidden = true;   // el mapa se redibuja: se oculta la ficha abierta
+    const modo = estado.fm.color || "cant", cob = cobertura(recs);
+    estado.cob = cob;
     const P = MAPA_AR.proj;
     const paths = Object.entries(MAPA_AR.paths).map(([nombre, d], i) => {
-      const n = cnt[provKey(nombre)] || 0;
+      const o = cob.get(provKey(nombre)) || { n: 0, n10: 0, N: 0, gl: 0, pobPct: 0 }, n = o.n;
       const sel = estado.fm.prov && provKey(estado.fm.prov) === provKey(nombre);
-      return `<path id="mp${i}" class="prov${sel ? " sel" : ""}" d="${d}" fill="${colorProv(n)}" data-mprov="${esc(nombre)}" tabindex="0" role="button" aria-label="${esc(nombre)}: ${n} ${n === 1 ? "ciudad reconocida" : "ciudades reconocidas"}. Filtrar por esta provincia"><title>${esc(nombre)}: ${n}</title></path>`;
+      const detalle = o.N ? `. ${txtCob(o)}; ${pct1(o.pobPct)} de su población` : "";
+      return `<path id="mp${i}" class="prov${sel ? " sel" : ""}" d="${d}" fill="${colorProv(valorCob(o, modo), modo)}" data-mprov="${esc(nombre)}" tabindex="0" role="button" aria-label="${esc(nombre)}: ${n} ${n === 1 ? "ciudad reconocida" : "ciudades reconocidas"}${detalle}. Filtrar por esta provincia"></path>`;
     }).join("");
     const pts = [...porCiudad.entries()].map(([k, rs]) => ({ c: estado.fichas.get(k), rs, tipo: rs.some((r) => r.tipo === "cert") ? "cert" : "sello" }))
       .filter((p) => p.c.lat != null && p.c.lon != null)
@@ -2143,7 +2283,9 @@ const MAPA_AR = {"proj": {"minx": -73.568399, "maxy": -21.786938, "k": 0.7880107
       `<span class="lg"><svg viewBox="0 0 14 14"><path d="M7 1L13 7L7 13L1 7Z" fill="var(--c-cert)"/></svg>Con Certificación (y puede tener sellos)</span>
        <span class="lg"><svg viewBox="0 0 14 14"><circle cx="7" cy="7" r="5.5" fill="var(--c-sel)"/></svg>Solo sellos</span>
        <span class="lg">Tamaño del símbolo: cantidad de reconocimientos</span>
-       <span class="lg" style="flex-basis:100%;gap:10px">Ciudades por provincia: ${ESCALA.map(([, c, t]) => `<span class="lg"><i class="sw" style="background:${c}"></i>${t}</span>`).join("")}</span>`;
+       <span class="lg-t">${esc(MAPA_COLOREAR[modo].titulo)}</span>
+       ${MAPA_COLOREAR[modo].pasos.map(([, t], i) => `<span class="lg"><i class="sw" style="background:${MAPA_COLORES[i]}"></i>${esc(t)}</span>`).join("")}
+       ${modo === "cant" ? "" : `<p class="m-nota">Cuentan las ciudades reconocidas de 10.000 habitantes o más, sobre los gobiernos locales de esa escala en la provincia (Censo 2022, INDEC). La Ciudad de Buenos Aires cuenta como un gobierno local.</p>`}`;
     const sinPunto = [...porCiudad.keys()].map((k) => estado.fichas.get(k)).filter((c) => c.lat == null || c.lon == null);
     const av = $('[data-render="mapaAviso"]');
     av.hidden = !sinPunto.length;
@@ -2169,6 +2311,35 @@ const MAPA_AR = {"proj": {"minx": -73.568399, "maxy": -21.786938, "k": 0.7880107
     $('[data-render="chTam"]').innerHTML = barras(T, mx(T));
   }
 
+  function renderCobertura() {
+    const modo = estado.fm.color || "cant", cob = estado.cob;
+    const filas = [...cob.entries()].filter(([, o]) => o.n > 0).map(([pk, o]) => ({ nombre: (CENSO.prov.get(pk) || {}).nombre || pk, o }))
+      .sort((a, b) => valorCob(b.o, modo) - valorCob(a.o, modo) || b.o.n - a.o.n || a.nombre.localeCompare(b.nombre, "es"));
+    const max = modo === "cant" ? Math.max(1, ...filas.map((f) => f.o.n)) : Math.max(1, ...filas.map((f) => valorCob(f.o, modo)));
+    $('[data-render="chCobT"]').textContent = modo === "cant" ? "Ciudades por provincia" : modo === "gl" ? "Cobertura de gobiernos locales" : "Cobertura de población";
+    $('[data-render="chCob"]').innerHTML = filas.length ? filas.map(({ nombre, o }) => {
+      const v = valorCob(o, modo);
+      const val = modo === "cant" ? `${o.n}` : modo === "gl" ? `${pct1(o.gl)} <small>${o.n10}/${o.N}</small>` : pct1(o.pobPct);
+      const aria = modo === "cant" ? `${o.n} ${o.n === 1 ? "ciudad reconocida" : "ciudades reconocidas"}` : modo === "gl" ? txtCob(o) : `${pct1(o.pobPct)} de la población de sus gobiernos locales de 10.000 hab. o más`;
+      return `<div class="hb cob"><span class="n">${esc(nombre)}</span><span class="tr" role="img" aria-label="${esc(nombre)}: ${esc(aria)}"><span class="c" style="width:${(v / max) * 100}%"></span></span><span class="v">${val}</span></div>`;
+    }).join("") : `<div class="empty" style="padding:8px 0">Sin ciudades con estos filtros.</div>`;
+    const fuera = [...new Set(recsMapaFiltrados().map((r) => r.key))].map((k) => estado.fichas.get(k)).filter((c) => poblacionCiudad(c) == null);
+    $('[data-render="chCobNota"]').textContent = modo === "cant" ? "Cada ciudad cuenta una vez, aunque tenga más de un reconocimiento."
+      : `Denominador: gobiernos locales de 10.000 hab. o más (Censo 2022).${fuera.length ? ` No suman al porcentaje por tener menos de 10.000 hab. o no tener población cargada: ${fuera.map((c) => c.ciudad).join(", ")}.` : ""}`;
+  }
+
+  function mostrarTipProv(el, ev) {
+    const tip = $("#m-tip"), nombre = el.dataset.mprov, o = (estado.cob && estado.cob.get(provKey(nombre))) || { n: 0, N: 0 };
+    tip.innerHTML = `<b>${esc(nombre)}</b>${o.n} ${o.n === 1 ? "ciudad reconocida" : "ciudades reconocidas"}${o.N ? `<ul><li>${esc(txtCob(o))}</li><li>${pct1(o.pobPct)} de la población de esos gobiernos locales</li></ul>` : ""}`;
+    tip.hidden = false;
+    const box = $("#m-map").getBoundingClientRect();
+    let x, y;
+    if (ev && ev.clientX) { x = ev.clientX - box.left + 14; y = ev.clientY - box.top + 14; }
+    else { const pb = el.getBoundingClientRect(); x = pb.left - box.left + pb.width / 2; y = pb.top - box.top + pb.height / 2; }
+    tip.style.left = Math.max(8, Math.min(x, box.width - tip.offsetWidth - 8)) + "px";
+    tip.style.top = Math.max(8, Math.min(y, box.height - tip.offsetHeight - 8)) + "px";
+  }
+
   function renderMapaTodo() {
     if (!estado.recs) return;
     const f = estado.fm;
@@ -2190,12 +2361,13 @@ const MAPA_AR = {"proj": {"minx": -73.568399, "maxy": -21.786938, "k": 0.7880107
     $("#m-limpiar").hidden = !filtrando;
     renderMapa(recs);
     renderGraficos(recs);
+    renderCobertura();
     const lista = [...ciudades.entries()].map(([k, rs]) => ({ c: estado.fichas.get(k), rs, todos: estado.recs.filter((r) => r.key === k) }))
       .sort((a, b) => b.rs.length - a.rs.length || a.c.ciudad.localeCompare(b.c.ciudad, "es"));
     $('[data-render="mLista"]').innerHTML = lista.length ? lista.map(({ c, rs }) => {
       const ord = [...rs].sort((a, b) => (a.tipo === "cert" ? -1 : 1) - (b.tipo === "cert" ? -1 : 1) || (b.anio || 0) - (a.anio || 0));
       return `<article class="card mcity" id="mc-${esc(c.key.replace(/[^a-z0-9]+/g, "-"))}">
-        <div class="row1"><div><h3>${esc(c.ciudad)}</h3><div class="prov">${svg("pin", 'width="13" height="13" style="vertical-align:-2px"')} ${esc(c.provincia)} · ${esc(c.region)}${c.tam ? " · " + esc(tamLabel(c.tam)) : ""}</div></div>
+        <div class="row1"><div><h3>${esc(c.ciudad)}</h3><div class="prov">${svg("pin", 'width="13" height="13" style="vertical-align:-2px"')} ${esc(c.provincia)} · ${esc(c.region)}${c.pob != null ? " · " + esc(fmtPob(c.pob)) : c.tam ? " · " + esc(tamLabel(c.tam)) : ""}</div></div>
         <div class="tot"><b>${rs.length}</b><span>${rs.length === 1 ? "Reconocimiento" : "Reconocimientos"}</span></div></div>
         <div class="rchips">${ord.map((r) => r.tipo === "cert"
           ? `<span class="rchip cert">${svg("check")}${esc(r.nombre)} <span class="yr">${r.anio || ""}</span></span>`
@@ -2207,7 +2379,7 @@ const MAPA_AR = {"proj": {"minx": -73.568399, "maxy": -21.786938, "k": 0.7880107
   function mostrarTip(el, ev) {
     const tip = $("#m-tip"), k = el.dataset.mcity, c = estado.fichas.get(k);
     const rs = recsMapaFiltrados().filter((r) => r.key === k);
-    tip.innerHTML = `<b>${esc(c.ciudad)}</b>${esc(c.provincia)}<ul>${rs.map((r) => `<li>${esc(r.nombre)} (${r.anio || "s/f"})</li>`).join("")}</ul>`;
+    tip.innerHTML = `<b>${esc(c.ciudad)}</b>${esc(c.provincia)}${c.pob != null ? " · " + esc(fmtPob(c.pob)) : ""}<ul>${rs.map((r) => `<li>${esc(r.nombre)} (${r.anio || "s/f"})</li>`).join("")}</ul>`;
     tip.hidden = false;
     const box = $("#m-map").getBoundingClientRect(), pb = el.getBoundingClientRect();
     let x = pb.left - box.left + pb.width / 2 + 12, y = pb.top - box.top - 10;
@@ -2340,7 +2512,7 @@ const MAPA_AR = {"proj": {"minx": -73.568399, "maxy": -21.786938, "k": 0.7880107
     document.addEventListener("click", (ev) => {
       const up = ev.target.closest("[data-actualizar]");
       if (up) { actualizarDesdeBoton(up.dataset.actualizar); return; }
-      const t = ev.target.closest("[data-eje],[data-sello],[data-ir-sello],[data-prov],[data-nivel],[data-toggle],[data-ir-nivel],[data-limpiar],#limpiar,#overlay,#p-close,[data-sf-prov],[data-sf-anio],#s-limpiar,[data-s-limpiar],[data-mf-tipo],#m-limpiar,[data-m-limpiar],[data-mprov],[data-mcity]");
+      const t = ev.target.closest("[data-eje],[data-sello],[data-ir-sello],[data-prov],[data-nivel],[data-toggle],[data-ir-nivel],[data-limpiar],#limpiar,#overlay,#p-close,[data-sf-prov],[data-sf-anio],#s-limpiar,[data-s-limpiar],[data-mf-tipo],[data-mf-color],#m-limpiar,[data-m-limpiar],[data-mprov],[data-mcity]");
       if (!t) return;
       if (t.dataset.eje) abrirPanel(t.dataset.eje);
       else if (t.dataset.sello) abrirPanelSello(t.dataset.sello);
@@ -2349,8 +2521,9 @@ const MAPA_AR = {"proj": {"minx": -73.568399, "maxy": -21.786938, "k": 0.7880107
       else if ("sfProv" in t.dataset) { estado.fs.prov = t.dataset.sfProv || null; renderSellosFiltros(); renderSellosCiudades(); }
       else if ("sfAnio" in t.dataset) { estado.fs.anio = t.dataset.sfAnio ? +t.dataset.sfAnio : null; renderSellosFiltros(); renderSellosCiudades(); }
       else if (t.id === "s-limpiar" || "sLimpiar" in t.dataset) { estado.fs = { ...estado.fs, q: "", prov: null, anio: null, sello: "" }; $("#sq-ciudad").value = ""; renderSellosFiltros(); renderSellosCiudades(); }
+      else if (t.dataset.mfColor) { estado.fm.color = t.dataset.mfColor; renderMapaFiltros(); renderMapaTodo(); }
       else if ("mfTipo" in t.dataset) { estado.fm.tipo = t.dataset.mfTipo; if (t.dataset.mfTipo === "cert") estado.fm.sello = ""; renderMapaFiltros(); renderMapaTodo(); }
-      else if (t.id === "m-limpiar" || "mLimpiar" in t.dataset) { estado.fm = { q: "", prov: "", region: "", partido: "", anio: "", tam: "", tipo: "", sello: "" }; $("#mq").value = ""; renderMapaFiltros(); renderMapaTodo(); }
+      else if (t.id === "m-limpiar" || "mLimpiar" in t.dataset) { estado.fm = { q: "", prov: "", region: "", partido: "", anio: "", tam: "", tipo: "", sello: "", color: estado.fm.color }; $("#mq").value = ""; renderMapaFiltros(); renderMapaTodo(); }
       else if (t.dataset.mprov) { const p = t.dataset.mprov; estado.fm.prov = provKey(estado.fm.prov) === provKey(p) ? "" : ([...estado.fichas.values()].find((c) => provKey(c.provincia) === provKey(p)) || { provincia: p }).provincia; renderMapaFiltros(); renderMapaTodo(); }
       else if (t.dataset.mcity) { const c = estado.fichas.get(t.dataset.mcity); estado.fm.q = c.ciudad; $("#mq").value = c.ciudad; $("#m-tip").hidden = true; renderMapaFiltros(); renderMapaTodo(); }
       else if ("prov" in t.dataset) { estado.filtros.prov = t.dataset.prov || null; renderFiltros(); renderCiudades(); }
@@ -2392,9 +2565,10 @@ const MAPA_AR = {"proj": {"minx": -73.568399, "maxy": -21.786938, "k": 0.7880107
       renderMapaFiltros(); renderMapaTodo();
     }));
     const mapa = $("#m-map");
-    mapa.addEventListener("mouseover", (e) => { const p = e.target.closest("[data-mcity]"); if (p) mostrarTip(p, e); });
-    mapa.addEventListener("mouseout", (e) => { if (e.target.closest("[data-mcity]")) $("#m-tip").hidden = true; });
-    mapa.addEventListener("focusin", (e) => { const p = e.target.closest("[data-mcity]"); if (p) mostrarTip(p, e); });
+    mapa.addEventListener("mouseover", (e) => { const p = e.target.closest("[data-mcity]"); if (p) return mostrarTip(p, e); const v = e.target.closest("[data-mprov]"); if (v) mostrarTipProv(v, e); });
+    mapa.addEventListener("mousemove", (e) => { const v = !e.target.closest("[data-mcity]") && e.target.closest("[data-mprov]"); if (v) mostrarTipProv(v, e); });
+    mapa.addEventListener("mouseout", (e) => { if (e.target.closest("[data-mcity],[data-mprov]")) $("#m-tip").hidden = true; });
+    mapa.addEventListener("focusin", (e) => { const p = e.target.closest("[data-mcity]"); if (p) return mostrarTip(p, e); const v = e.target.closest("[data-mprov]"); if (v) mostrarTipProv(v); });
     mapa.addEventListener("focusout", () => { $("#m-tip").hidden = true; });
     window.addEventListener("hashchange", mostrarVista);
     if ("IntersectionObserver" in window) {
@@ -2478,7 +2652,7 @@ const MAPA_AR = {"proj": {"minx": -73.568399, "maxy": -21.786938, "k": 0.7880107
   document.addEventListener("DOMContentLoaded", () => {
     estado.fuente.sellos = "respaldo"; estado.fuente.maestra = "respaldo";
     estado.fs = { q: "", sello: "", prov: null, anio: null, orden: "nombre" };
-    estado.fm = { q: "", prov: "", region: "", partido: "", anio: "", tam: "", tipo: "", sello: "" };
+    estado.fm = { q: "", prov: "", region: "", partido: "", anio: "", tam: "", tipo: "", sello: "", color: "cant" };
     renderTextos(); renderTextosSellos(); prepararRecursos();
     setPreguntas(RESPALDO_PREGUNTAS.filas);   // primero se muestra el respaldo…
     setCiudades(RESPALDO_CIUDADES.filas);
