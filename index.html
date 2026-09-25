@@ -645,6 +645,36 @@ body[data-sec="mapa"] { --acc: var(--c-mapa); }
 .hb.cob .v small { font-family: var(--f-body); font-weight: 500; color: var(--dgray); }
 .ch-nota { font-size: 11.5px; color: var(--dgray); margin-top: 8px; line-height: 1.4; }
 @media (max-width: 560px) { .hb.cob { grid-template-columns: 90px 1fr 84px; } }
+
+/* Apartado: Índice de Clima de Inversiones Local (no forma parte de la certificación) */
+.apartado { --acc: var(--dgray); border: 2px dashed #B9B1A5; border-radius: var(--r); padding: 22px 24px; background: transparent; }
+.ap-top { display: flex; justify-content: flex-end; align-items: center; gap: 10px; flex-wrap: wrap; margin-bottom: 12px; }
+.ap-tag { display: inline-flex; align-items: center; gap: 6px; font-family: var(--f-title); font-weight: 800; font-size: 11px; text-transform: uppercase; letter-spacing: 1.2px; color: var(--dgray); border: 1.5px solid var(--dgray); border-radius: var(--r); padding: 5px 9px; background: var(--white); }
+.ap-tag svg { width: 14px; height: 14px; flex: none; }
+.apartado .h2 { margin-bottom: 4px; }
+.ap-bajada { font-size: 17px; color: var(--dgray); margin: 0 0 16px; }
+.ap-row { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+.ap-stats { display: flex; gap: 18px; flex-wrap: wrap; font-family: var(--f-title); font-weight: 700; font-size: 13px; text-transform: uppercase; letter-spacing: .8px; color: var(--dgray); }
+.ap-stats b { font-size: 28px; font-weight: 800; color: var(--black); margin-right: 4px; letter-spacing: 0; }
+.ap-dims { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 16px; }
+.ap-dim { font: 600 13px var(--f-body); color: var(--black); background: var(--white); border: 1px solid var(--border); border-radius: var(--r); padding: 6px 10px; cursor: pointer; display: inline-flex; gap: 6px; align-items: center; }
+.ap-dim:hover { border-color: var(--dgray); }
+.ap-dim .c { font-family: var(--f-title); font-weight: 800; color: var(--dgray); }
+.tab-sub a.sub-ap { border-left: 1px dashed #B9B1A5; margin-left: 4px; padding-left: 12px; }
+/* Panel en modo apartado */
+.panel.apartado-p { --acc: var(--dgray); }
+.p-icil { display: grid; gap: 8px; margin-top: 4px; }
+.p-icil .row2 { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.p-icil input, .p-icil select { font: inherit; font-size: 14px; padding: 8px 10px; border: 1px solid var(--border); border-radius: var(--r); background: var(--white); color: var(--black); width: 100%; }
+.p-icil .res { font-size: 12px; color: var(--dgray); }
+.q .qt p { margin: 0; }
+.q .qt p + p { margin-top: 6px; font-size: 13px; color: var(--dgray); }
+.q .q-list { margin: 6px 0 0; padding-left: 18px; font-size: 13px; color: var(--dgray); }
+.q .q-list li { margin-bottom: 2px; }
+.ops { list-style: none; margin: 10px 0 0; padding: 0; display: grid; gap: 5px; }
+.ops li { font-size: 13.5px; background: var(--cream); border: 1px solid var(--cream2); border-radius: var(--r); padding: 6px 10px; }
+.ops-t { font-family: var(--f-title); font-weight: 800; font-size: 10.5px; text-transform: uppercase; letter-spacing: 1px; color: var(--gray); margin-top: 10px; }
+@media (max-width: 560px) { .apartado { padding: 18px 16px; } .p-icil .row2 { grid-template-columns: 1fr; } }
 </style>
 </head>
 <body>
@@ -680,6 +710,7 @@ body[data-sec="mapa"] { --acc: var(--c-mapa); }
           <a href="#condiciones">Condiciones</a>
           <a href="#niveles">Niveles</a>
           <a href="#adhesion">Adhesión</a>
+          <a href="#clima-inversiones" class="sub-ap">Clima de inversiones</a>
         </div>
       </div>
       <div class="tabs-group" data-tabs="sellos" hidden>
@@ -810,6 +841,23 @@ body[data-sec="mapa"] { --acc: var(--c-mapa); }
         <ul data-render="admCasos"></ul>
         <p class="small" data-text="admCierre"></p>
       </div>
+    </div>
+  </section>
+
+  <!-- =================== APARTADO: ÍNDICE DE CLIMA DE INVERSIONES LOCAL =================== -->
+  <section class="section" id="clima-inversiones" aria-labelledby="t-icil">
+    <div class="apartado">
+      <div class="ap-top">
+        <span class="ap-tag" data-ap-tag hidden><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 11v5.5M12 7.6v.3"/></svg><span data-text-i="etiqueta"></span></span>
+        <div class="upd-box"><span class="data-note" data-note="icil" hidden></span><button class="btn-upd" data-actualizar="icil" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 12a8 8 0 0 1-14.3 4.9M4 12A8 8 0 0 1 18.3 7.1"/><path d="M18.5 3v4.3h-4.3M5.5 21v-4.3h4.3"/></svg><span>Actualizar índice</span></button><span class="upd-msg" data-msg="icil" role="status"></span></div>
+      </div>
+      <h2 class="h2" id="t-icil" data-text-i="titulo"></h2>
+      <p class="ap-bajada" data-text-i="bajada"></p>
+      <div class="ap-row">
+        <div class="ap-stats"><span><b data-bind="icilDims">–</b> dimensiones</span><span><b data-bind="icilPregs">–</b> preguntas</span></div>
+        <button class="btn btn-outline" data-icil="" type="button"><span data-text-i="boton"></span> <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></button>
+      </div>
+      <div class="ap-dims" data-render="icilDims" aria-label="Dimensiones del índice"></div>
     </div>
   </section>
 </div>
@@ -1010,6 +1058,11 @@ body[data-sec="mapa"] { --acc: var(--c-mapa); }
     <div class="label"><span class="dot"></span><span id="p-kicker">Eje de análisis</span></div>
     <h2 id="p-title"></h2>
     <div class="p-stats" id="p-stats"></div>
+    <div id="p-icil" class="p-icil" hidden>
+      <div class="row2"><label class="sr-only" for="pi-q">Buscar pregunta</label><input id="pi-q" type="search" placeholder="Buscar pregunta…" autocomplete="off">
+      <label class="sr-only" for="pi-dim">Dimensión</label><select id="pi-dim"></select></div>
+      <div class="res" id="pi-res" aria-live="polite"></div>
+    </div>
     <div id="p-extra">
     <div class="p-legend">
       <div><span class="chip-cm"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2.8l2.8 5.8 6.3.9-4.6 4.4 1.1 6.3L12 17.3l-5.6 2.9 1.1-6.3-4.6-4.4 6.3-.9z"/></svg>Criterio mínimo</span> Obligatorio: si no se cumple, no se certifica.</div>
@@ -1030,6 +1083,7 @@ body[data-sec="mapa"] { --acc: var(--c-mapa); }
       <div>Certificaciones: <b data-bind="updCiudades">cargando…</b></div>
       <div>Sellos: <b data-bind="updSellos">cargando…</b></div>
       <div>Datos de ciudades: <b data-bind="updMaestra">cargando…</b></div>
+      <div>Índice de clima de inversiones: <b data-bind="updIcil">cargando…</b></div>
     </div>
     <div class="site"><a href="https://redinnovacionlocal.org" target="_blank" rel="noopener">redinnovacionlocal.org</a> · <span data-bind="anio">2026</span></div>
   </div>
@@ -1052,7 +1106,9 @@ const FUENTES = {
   // Certificaciones: Ciudad | Provincia | Tamaño de ciudad | Fecha de certificación | Nivel alcanzado | "<Eje> Obtenido" | Máximo | % …
   sellos:   { sheetId: "1S3xtEKzsL6jYjwXsxK7yyUNEjq4bOUwBz5SOTBPVmdI", sheet: "Mapa sellos" },
   // Sellos: Ciudad | Provincia | Entrega | Sello RIL otorgado | Fecha | Puntaje
-  maestra:  { sheetId: "1S3xtEKzsL6jYjwXsxK7yyUNEjq4bOUwBz5SOTBPVmdI", sheet: "Ciudades" }
+  maestra:  { sheetId: "1S3xtEKzsL6jYjwXsxK7yyUNEjq4bOUwBz5SOTBPVmdI", sheet: "Ciudades" },
+  // Apartado "Índice de Clima de Inversiones Local": planilla "Calificadora de Oportunidades - Indicadores", pestaña "Indicadores - COL"
+  icil:     { sheetId: "1sBLPaC1kmXkYjDcQIrAtTXx5ynLNPZAcSYa2Ie3C0ag", gid: "1322716090" }
   // Ciudades: Ciudad | Provincia | Región | Población (Censo 2022) | Partido político | Latitud | Longitud  (el tamaño se calcula con la población)
 };
 
@@ -1145,6 +1201,7 @@ const CONTENIDO = {
 // Qué recarga cada botón "Actualizar"
 const GRUPOS = {
   preguntas: ["preguntas"],
+  icil: ["icil"],
   ciudades: ["ciudades"],
   sellos: ["sellos", "maestra"],
   mapa: ["ciudades", "sellos", "maestra"]
@@ -1226,6 +1283,15 @@ const MAPA_COLOREAR = {
     pasos: [[0, "0%"], [0.001, "Menos de 5%"], [5, "5 a 10%"], [10, "10 a 20%"], [20, "20% o más"]] },
   pob: { boton: "% de población", titulo: "% de la población de esos gobiernos locales que vive en una ciudad reconocida",
     pasos: [[0, "0%"], [0.001, "Menos de 15%"], [15, "15 a 30%"], [30, "30 a 50%"], [50, "50% o más"]] }
+};
+
+// Apartado de la sección Certificación: Índice de Clima de Inversiones Local
+// (no forma parte de la certificación; se muestran dimensión, pregunta y opciones 1 a 3)
+const CONTENIDO_ICIL = {
+  etiqueta: "",   // etiqueta opcional arriba del título (vacía = no se muestra)
+  titulo: "Índice de Clima de Inversiones Local",
+  bajada: "Otro aspecto de una gestión local eficiente.",
+  boton: "Ver el índice"
 };
 
 const RESPALDO_PREGUNTAS = {
@@ -1534,6 +1600,71 @@ const RESPALDO_MAESTRA = {
   ]
 };
 
+const RESPALDO_ICIL = {
+  fecha: "2026-09-25",
+  // Copia de "Calificadora de Oportunidades - Indicadores" (pestaña "Indicadores - COL"): dimensión, orden, pregunta y opciones 1 a 3
+  filas: [
+    ["Dimensión", "Orden", "Indicadores", "Opción 1", "Opción 2", "Opción 3"],
+    ["Tributación local", "1", "¿Cuál es el rango de alícuota general que abonan las actividades económicas, excluyendo las actividades relacionadas a servicios financieros, al municipio en concepto de Tasa de Inspección de Seguridad e Higiene (TISH), Tasa de derechos y registro e inspección o similares?", "Mayor a 2,5%", "Mayor a 2% y menor a 2,5%", "Menor o igual a 2%"],
+    ["Tributación local", "2", "¿Cuál es la cantidad mínima de tasas municipales para actividades economicas por gobierno local? Por ejemplo: Tasa de Inspección de Seguridad e Higiene, Tasa de habilitación comercial / industrial, Tasa por servicios generales (alumbrado, barrido, limpieza), Tasa de publicidad y propaganda, Tasa de inspección sanitaria o bromatológica, Tasa ambiental o de control ambiental, Tasa de uso del espacio público, Tasa por inspección de obras / seguridad edilicia, Tasa de derecho de oficina, Tasa por control de transporte o carga y descarga, entre otras", "Más de 4 tasas", "Más de 3 y hasta 4 tasas", "3 o menos"],
+    ["Tributación local", "3", "¿El gobierno local cobra actualmente la Tasa por Red Vial al sector agropecuario en el caso en que no sea de competencia provincial?", "Sí", "", "No"],
+    ["Tributación local", "4", "¿Existe un régimen de simplificación tributaria para actividades económicas? Aclaración: la simplificación del regimen tributario puede implicar: a) reducir la cantidad y diversidad de impuestos que existen, b) eliminar Declaraciones Juradas y/o c) unificar impuestos nacionales y/o provinciales, con tasas municipales.", "No", "No, pero se está trabajando", "Si"],
+    ["Tributación local", "5", "¿El gobierno local cuenta con una ordenanza de estabilidad tributaria que limite el aumento de tasas o impida la creación de nuevos tributos sin mayoría especial del Concejo Deliberante?", "No existe ninguna norma al respecto", "Existe pero no requiere mayoría especial para modificarse", "Sí, existe y requiere mayoría especial del Concejo Deliberante para ser modificada"],
+    ["Tributación local", "6", "¿El gobierno local aumentó la alicuota de alguna tasa o creó nuevas tasas en los últimos 3 años?", "Sí, creó nuevas tasas y/o aumentó la alícuota de alguna tasa existente", "Aumentó la alicuota de alguna tasa pero no creó nuevas", "No creó nuevas tasas ni aumentó alícuotas a tasas existentes"],
+    ["Tributación local", "7", "¿El gobierno local cuenta con un Régimen de Incentivos para Grandes Inversiones (RIGI municipal) o similar que ofrezca beneficios tributarios a inversiones que generen empleo local?", "No", "Sí, pero no está sancionado por ordenanza", "Sí, sancionado por ordenanza y publicado"],
+    ["Habilitaciones e inspecciones", "8", "¿Posee el gobierno local un código de habilitaciones que regule de manera integral tanto la obtención como la renovación de las habilitaciones?", "No existe un código unificado o está desactualizado y es de difícil acceso.", "Existe un código, pero requiere actualización o es de acceso limitado.", "Existe un código de habilitaciones actualizado y de fácil acceso público."],
+    ["Habilitaciones e inspecciones", "9", "¿El trámite de habilitación comercial se puede realizar de manera on-line?", "No", "Algunas actividades", "Sí, todas las actividades"],
+    ["Habilitaciones e inspecciones", "10", "¿El pago del trámite de habilitación comercial se puede hacer on-line?", "Tiene costo pero no se puede pagar on-line", "Tiene costo y se paga on-line", "No tiene costo"],
+    ["Habilitaciones e inspecciones", "11", "En el caso de que el comercio necesite realizar una obra nueva o una remodelación, ¿cuál es el tiempo promedio para la tramitación de permisos de obra comercial?", "Más de 60 días", "Entre 15 y 60 días hábiles", "Menos de 15 días hábiles"],
+    ["Habilitaciones e inspecciones", "12", "¿Cuál es el tiempo promedio de demora para la inspección pre-habilitación?", "Más de 8 días", "Entre 3 y 7 días", "Menos de 48hs hábiles"],
+    ["Habilitaciones e inspecciones", "13", "¿Cuál es el tiempo promedio de habilitación comercial definitiva?", "Más de 10 días hábiles", "Entre 72 hs y 10 días hábiles", "72 hs hábiles o menos"],
+    ["Habilitaciones e inspecciones", "14", "¿Cuántos trámites previos son necesarios para el proceso de habilitación?", "Más de 7", "Entre 3 y 7", "Menos de 3"],
+    ["Habilitaciones e inspecciones", "15", "¿El gobierno local posee ordenanzas de inspección?", "No", "Sí, pero no está disponible on-line", "Si"],
+    ["Digitalización administrativa", "16", "¿Cuántos de estos trámites se encuentran digitalizados?\n - Pago online de tasas y tributos municipales (TISH, Tasa Habilitación, etc.)\n - Habilitación y renovación de comercios\n - Solicitud de poda, retiro de escombros y residuos voluminosos\n - Permisos de obra y demolición\n - Boleta digital y notificaciones electrónicas\n - Reclamos de alumbrado, bacheo y mantenimiento", "Menos de 3", "Entre 3 y 4", "Más de 4"],
+    ["Digitalización administrativa", "17", "¿Cuál es el porcentaje de trámites con pago electrónico?\n - Licencia de conducir\n - Habilitación comercial\n - Tasa por publicidad y propaganda\n - Aprobación de planos y permisos de obra\n - Certificado final de obra\n - Derechos de cementerio\n - Multas de tránsito", "Menos del 40%", "Entre el 40% y el 69%", "Más del 70%"],
+    ["Digitalización administrativa", "18", "De la totalidad de los pagos realizados al gobierno local en concepto de tasas y contribuciones, ¿qué porcentaje corresponde a aquellas efectuadas exclusivamente mediante transferencia electrónica (considerando la cantidad de operaciones y no su valor monetario)?", "Más del 75%", "Entre el 50% y 75%", "Menos del 50%"],
+    ["Digitalización administrativa", "19", "¿Existe una guía/manual digital de trámites disponibles al público que incluya:\n - Pago online de tasas y tributos municipales (TISH, Tasa Habilitación, etc.)\n - Habilitación y renovación de comercios\n - Solicitud de poda, retiro de escombros y residuos voluminosos\n - Permisos de obra y demolición\n - Boleta digital y notificaciones electrónicas\n - Reclamos de alumbrado, bacheo y mantenimiento", "No existe o incluye menos de 3 trámites", "Sí, incluye entre 3 y 4 trámites", "Sí, y incluye más de 4 trámites"],
+    ["Digitalización administrativa", "20", "¿Existe una ventanilla única digital para empresas? Aclaración: es un punto centralizado de atención donde las empresas puedan realizar diversos trámites y gestiones relacionadas con su actividad, sin necesidad de ir a distintas oficinas o departamentos.", "No", "", "Si"],
+    ["Digitalización administrativa", "21", "¿Existe una ordenanza, decreto o resolución que establezca la implementación del expediente electrónico para el vinculo con el sector privado?", "No usa expediente electrónico", "Uso de expediente electrónico en algunas áreas o trámites", "Uso 100% expediente electrónico en todo el municipio"],
+    ["Infraestructura y servicios", "22", "¿Qué porcentaje de cobertura de servicios (agua, cloacas, gas, energía electrica, pavimentación) hay en el territorio de la ciudad?", "Menos del 50% (solo 1 o 2 servicios están disponibles y la calidad/capacidad es insuficiente para la demanda).", "Entre 50% y 80% (hay un mix de 3 o 4 servicios, pero uno o más tienen cobertura parcial).", "Más de 80% (la zona cuenta con los 4 servicios instalados y operativos)"],
+    ["Infraestructura y servicios", "23", "¿Cuál es el nivel de conectividad de tu municipio?", "Baja", "Media", "Alta"],
+    ["Infraestructura y servicios", "24", "¿El gobierno posee un plan de infraestructura local de mediano/largo plazo que dé soporte a su matriz productiva publicado en su página web? Luminaria, puentes, tendidos cloacales, agua, etc", "No", "Si pero no es público", "Si y es público"],
+    ["Infraestructura y servicios", "25", "¿Existe un código de ordenamiento urbano actualizado (últimos 10 años)?", "No", "Sí, pero desactualizado", "Si"],
+    ["Infraestructura y servicios", "26", "¿Existe un visor catastral o mapa de planificación urbana disponible en la página web del municipio?", "No", "", "Si"],
+    ["Infraestructura y servicios", "27", "¿La ciudad posee un parque industrial y/o tecnológico y/o de servicios, entre otros?", "No", "No, pero existe un parque industrial, tecnologico y/o de servicios en un municipio vecino (menos de 30 km)", "Si"],
+    ["Infraestructura y servicios", "28", "¿Los parques industriales del municipio cuentan con acceso directo y pavimentado a rutas provinciales o nacionales?", "No / No aplica (no hay parque industrial)", "Acceso indirecto o con tramos sin pavimentar", "Sí, acceso directo y pavimentado"],
+    ["Infraestructura y servicios", "29", "¿El gobierno local aplica tarifas diferenciales para actividades industriales (energía, tasas, servicios, entre otros)?", "No", "Sí, para algunos sectores específicos pero sin un esquema formal publicado", "Sí, con un esquema formal, sancionado por ordenanza y publicado de tarifas diferenciales por sector"],
+    ["Infraestructura y servicios", "30", "¿El gobierno local publica datos de seguridad pública (robos, homicidios, incidentes) de manera periódica, desagregada y accesible?", "No publica datos de seguridad", "Publica datos pero de forma irregular, sin desagregar o de difícil acceso", "Sí, publica datos actualizados, desagregados por zona y accesibles en su página web"],
+    ["Infraestructura y servicios", "31", "¿El gobierno local cuenta con un sistema de monitoreo urbano (cámaras, centro de operaciones o similar) para la prevención del delito?", "No", "Sí, pero de cobertura limitada o sin integración con fuerzas de seguridad provinciales/nacionales", "Sí, con cobertura amplia e integrado con fuerzas de seguridad provinciales/nacionales"],
+    ["Apoyo y fomento económico", "32", "¿El gobierno local cuenta con programas de financiamiento, propios o articulados con terceros, destinados al fomento emprendedor y/o PyMEs?", "No", "Sí, solo propios/ solo provenientes de redes de articulación", "Sí, tanto propios como provenientes de redes de articulación"],
+    ["Apoyo y fomento económico", "33", "¿El gobierno local cuenta con espacios de capacitación para el ecosistema emprendedor y/o PyMEs?", "No", "Sí, para proyectos estratégicos", "Sí, de manera sistemática incluido dentro del plan de acción de gobierno local"],
+    ["Apoyo y fomento económico", "34", "¿El gobierno local genera convenios que institucionalicen redes de articulación entre ecosistema tecnológico/científico/universitario para promover el aprendizaje con emprendedores y/o PyMEs de la ciudad?", "No", "Sí, para proyectos específicos", "Sí, de manera sistemática incluido dentro del plan de acción de gobierno local"],
+    ["Apoyo y fomento económico", "35", "¿Cuántas nuevas habilitaciones comerciales, industriales y de servicios (definitivas o provisorias) otorgó el municipio en los últimos 12 meses por cada 1.000 habitantes?\n\nDefinición de unidad económica / empresa: Para este indicador, se contabilizan todas las altas de habilitaciones municipales (comerciales, industriales, logísticas o de servicios) registradas en el último año calendario. \nNuevas Habilitaciones Otorgadas en los últimos 12 meses/Población Total del Municipio (Censo/Proyección INDEC) * 1.000", "Menos de 2 nuevas habilitaciones por cada 1.000 habitantes al año", "Entre 2 y 3,5 nuevas habilitaciones por cada 1.000 habitantes al año", "Más de 3,5 nuevas habilitaciones por cada 1.000 habitantes al año"],
+    ["Formación del capital humano", "36", "¿El gobierno local cuenta con instrumentos propios que le permitan conocer la proporción de la población mayor de 18 años con estudios superiores (terciarios o universitarios) completos en la ciudad?", "No", "Sí, pero no se usa de manera regular", "Sí, de manera regular y sistemática"],
+    ["Formación del capital humano", "37", "¿El gobierno local conoce cuáles son las habilidades necesarias para agregar valor a través del conocimiento para los diferentes actores productivos de su ciudad?", "No", "Si, de manera parcial o en algunos sectores de la matriz productiva", "Si, en todos los sectores de la matriz productiva"],
+    ["Formación del capital humano", "38", "¿El gobierno local ofrece o articula para proveer capacitaciones en las habilidades necesarias para agregar valor a través del conocimiento en su ciudad? (Pueden ser capacitaciones tanto virtuales como presenciales, provistas por el gobierno local o difundidas por el gobierno local)", "No", "", "Si"],
+    ["Formación del capital humano", "39", "¿El gobierno local cuenta con programas de beneficios para las empresas que incorporan personal, ya sea propios o en articulación con otros niveles de gobierno?", "No", "", "Si"],
+    ["Formación del capital humano", "40", "¿Existe en la ciudad una sede universitaria y/o terciaria?", "No", "No, pero existe una sede universitaria y/o terciaria en un municipio vecino (menos de 30 km)", "Si"],
+    ["Formación del capital humano", "41", "¿El gobierno local cuenta con una oficina de empleo?", "No", "", "Si"],
+    ["Formación del capital humano", "42", "¿El gobierno local realiza ferias de empleo o tiene una bolsa de trabajo municipal?", "No", "Si, realiza ferias de empleo o tiene bolsa de trabajo", "Si, ambas"],
+    ["Articulación público - privada", "43", "¿El gobierno local cuenta con un mapa de actores del sector productivo/económico radicado en su ciudad, que contenga información sobre sector, rubro y cantidad de empleados de las empresas?", "No", "Sí, pero parcial o sin actualización periódica", "Si, completo y actualizado anualmente"],
+    ["Articulación público - privada", "44", "¿Cuenta el municipio con una estrategia o modelo de desarrollo económico local formalizado que diagnostique sus ventajas comparativas e identifique sectores o verticales productivos priorizados?\n\nAclaración: Evalúa si el municipio pasó de una posición pasiva a un rol activo de gestión de inversiones, identificando formalmente qué industrias, sectores o servicios busca atraer o potenciar (ej. polos logísticos, agroindustria, software, turismo temático, proveedores mineros) mediante normativas, regímenes de incentivo fiscal o infraestructura dedicada.", "No", "Sí, cuenta con un diagnóstico pero no ofrece incentivos focalizados y no lo tiene publicado.", "Sí, cuenta con un diagnóstico y una estrategía de atracción focalizada publicada."],
+    ["Articulación público - privada", "45", "¿Existen instancias formales de diálogo (mesas, foros, reuniones) con actores del sector privado?", "No", "Sí, pero no de forma períodica", "Sí, periodicamente"],
+    ["Articulación público - privada", "46", "¿El gobierno local cuenta con una política o programa normado que de marco y promueva la articulación público-privada?", "No", "", "Si"],
+    ["Articulación público - privada", "47", "¿El gobierno local cuenta con un portal para inversores?", "No", "", "Si"],
+    ["Mercado público", "48", "¿El gobierno local cuenta con un portal para la gestión de proveedores, que le permita cargar su factura, realizar el seguimiento del proceso de compra hasta el momento del pago, incluyendo la emisión de las retenciones sufridas?", "No", "Sí, pero solo puede llevar a cabo alguna de estas tareas", "Si"],
+    ["Mercado público", "49", "¿Qué porcentaje de las compras del gobierno local se hace de forma abierta a través de la página web?", "No sabe / Menos del 25%", "Entre el 25% y el 75%", "Más del 75%"],
+    ["Mercado público", "50", "¿El gobierno local cuenta con la información de licitaciones (contratos, montos y proveedores) publicada en formatos de datos abiertos (ej. OC4IDS/Open Contracting Data Standard)?", "No", "Algunos", "Todos"],
+    ["Mercado público", "51", "¿Cuántos días calendario promedio transcurren desde la publicación de la licitación hasta la firma del contrato?", "Más de 6 meses", "Entre 3 a 6 meses", "Menos de 3 meses"],
+    ["Mercado público", "52", "¿Cuántos días calendario promedio transcurren desde la presentación de la factura hasta el pago?", "Más de 90 días", "Entre 45 y 90 días", "Menos de 45 días"],
+    ["Transparencia y acceso a la información pública", "53", "¿Se publica el presupuesto vigente asignado a cada área, programa o función?", "No", "Parcialmente", "Si"],
+    ["Transparencia y acceso a la información pública", "54", "¿Las Ordenanzas Fiscal e Impositiva vigentes se han publicado en el Boletín Oficial local?", "No", "", "Si"],
+    ["Transparencia y acceso a la información pública", "55", "¿Se publican todas las instancias de los proceso de compra: llamado a licitación, apertura de sobres y adjudicación?", "No", "Parcialmente", "Si"],
+    ["Transparencia y acceso a la información pública", "56", "¿El gobierno local cuenta con un portal de datos abiertos?", "No", "Sí, pero solo con datos geográficos/demográficos", "Sí, tanto con datos geográficos como demográficos"],
+    ["Transparencia y acceso a la información pública", "57", "En los últimos 10 años, ¿cuál ha sido la normativa vigente en el municipio respecto a la elección del intendente?", "Reelección indefinida permitida", "Reelección permitida con límite de mandatos", "Reelección no permitida"]
+  ]
+};
+
 /* ---------------------------------------------------------------------
    CENSO 2022 (INDEC) — base de referencia para la cobertura del mapa
    Fuente: "Total de viviendas y población según gobierno local", Censo Nacional
@@ -1695,7 +1826,7 @@ const MAPA_AR = {"proj": {"minx": -73.568399, "maxy": -21.786938, "k": 0.7880107
     const ctrl = new AbortController();
     const t = setTimeout(() => ctrl.abort(), FUENTES.timeoutMs);
     try {
-      const r = await fetch(gvizURL(sheetId, `tqx=out:csv&${selector(sel)}`), { signal: ctrl.signal, cache: "no-store" });
+      const r = await fetch(gvizURL(sheetId, `tqx=out:csv&${selector(sel)}&_=${Date.now()}`), { signal: ctrl.signal, cache: "no-store" });
       if (!r.ok) throw new Error("HTTP " + r.status);
       const txt = await r.text();
       if (/^\s*</.test(txt)) throw new Error("La planilla no es pública");
@@ -1717,7 +1848,7 @@ const MAPA_AR = {"proj": {"minx": -73.568399, "maxy": -21.786938, "k": 0.7880107
         const rows = resp.table.rows.map((r) => (r.c || []).map((c) => (c == null ? "" : c.f != null ? String(c.f) : c.v == null ? "" : String(c.v))));
         resolve([labels, ...rows]);
       };
-      s.src = gvizURL(sheetId, `tqx=out:json;responseHandler:${cb}&${selector(sel)}`);
+      s.src = gvizURL(sheetId, `tqx=out:json;responseHandler:${cb}&${selector(sel)}&_=${Date.now()}`);
       s.onerror = () => { fin(); reject(new Error("sin conexión")); };
       document.head.appendChild(s);
     });
@@ -2092,6 +2223,79 @@ const MAPA_AR = {"proj": {"minx": -73.568399, "maxy": -21.786938, "k": 0.7880107
   }
 
   /* ---------- SELLOS: información ---------- */
+  /* ---------- apartado: Índice de Clima de Inversiones Local ---------- */
+  function procesarIcil(rows) {
+    const hi = rows.findIndex((r) => r.some((c) => ["indicadores", "indicador", "pregunta"].includes(norm(c))));
+    if (hi < 0) throw new Error("Sin columna Indicadores en el índice");
+    const h = rows[hi].map(norm);
+    const iQ = h.findIndex((c) => ["indicadores", "indicador", "pregunta"].includes(c));
+    const iD1 = h.indexOf("dimension 1"), iD = iD1 >= 0 ? iD1 : h.findIndex((c) => c.startsWith("dimension"));
+    const iN = h.lastIndexOf("orden");
+    const iO = [1, 2, 3].map((k) => h.indexOf("opcion " + k));   // solo opciones 1 a 3
+    let dim = ""; const out = [];
+    rows.slice(hi + 1).forEach((r) => {
+      const d = String(r[iD] ?? "").replace(/\s+/g, " ").trim(); if (d) dim = d;
+      const q = String(r[iQ] ?? "").replace(/\r/g, "").trim(); if (!q) return;
+      const n = iN >= 0 ? String(r[iN] ?? "").replace(/\.0+$/, "").trim() : "";
+      out.push({ dim: dim || "Sin dimensión", n: n || String(out.length + 1), q, ops: iO.map((i) => (i >= 0 ? String(r[i] ?? "").trim() : "")).filter(Boolean) });
+    });
+    return out;
+  }
+  function setIcil(rows) { estado.icil = procesarIcil(rows); }
+  const icilDims = () => { const m = new Map(); (estado.icil || []).forEach((q) => m.set(q.dim, (m.get(q.dim) || 0) + 1)); return [...m.entries()]; };
+  function renderIcil() {
+    const C = CONTENIDO_ICIL;
+    $$("[data-text-i]").forEach((el) => (el.textContent = C[el.dataset.textI] ?? ""));
+    $$("[data-ap-tag]").forEach((el) => (el.hidden = !C.etiqueta));
+    const D = icilDims();
+    bindAll("icilDims", D.length); bindAll("icilPregs", (estado.icil || []).length);
+    $('[data-render="icilDims"]').innerHTML = D.map(([d, n]) => `<button class="ap-dim" type="button" data-icil="${esc(d)}" aria-label="Ver ${esc(d)}: ${n} preguntas">${esc(d)} <span class="c">${n}</span></button>`).join("");
+    if (icilAbierto) renderIcilPanel();
+  }
+  // Texto de la pregunta: párrafos y listas ("- ítem")
+  function fmtPregunta(t) {
+    let html = "", ul = [];
+    const flush = () => { if (ul.length) { html += `<ul class="q-list">${ul.map((x) => `<li>${esc(x)}</li>`).join("")}</ul>`; ul = []; } };
+    t.split("\n").map((l) => l.trim()).forEach((l) => {
+      if (!l) { flush(); return; }
+      const m = l.match(/^[-–•]\s*(.*)$/);
+      if (m) ul.push(m[1]); else { flush(); html += `<p>${esc(l)}</p>`; }
+    });
+    flush(); return html;
+  }
+  let icilAbierto = false;
+  function abrirPanelIcil(dim) {
+    icilAbierto = true; ejeAbierto = null; selloAbierto = null;
+    $("#panel").classList.add("apartado-p");
+    $("#p-kicker").textContent = CONTENIDO_ICIL.etiqueta;
+    $("#p-kicker").parentElement.hidden = !CONTENIDO_ICIL.etiqueta;
+    $("#p-title").textContent = CONTENIDO_ICIL.titulo;
+    const D = icilDims();
+    $("#p-stats").innerHTML = `<div class="p-stat"><b>${D.length}</b><span>Dimensiones</span></div><div class="p-stat"><b>${(estado.icil || []).length}</b><span>Preguntas</span></div>`;
+    $("#p-extra").hidden = true; $("#p-icil").hidden = false;
+    $("#pi-q").value = "";
+    $("#pi-dim").innerHTML = `<option value="">Todas las dimensiones</option>` + D.map(([d]) => `<option value="${esc(d)}">${esc(d)}</option>`).join("");
+    $("#pi-dim").value = dim || "";
+    renderIcilPanel();
+    abrirPanelBase();
+  }
+  function renderIcilPanel() {
+    const q = norm($("#pi-q").value), dim = $("#pi-dim").value;
+    const qs = (estado.icil || []).filter((p) => (!dim || p.dim === dim) && (!q || norm(p.q + " " + p.ops.join(" ")).includes(q)));
+    const dims = [...new Set(qs.map((p) => p.dim))];
+    const tot = (estado.icil || []).length;
+    $("#pi-res").textContent = qs.length === tot ? `${tot} preguntas` : `Mostrando ${qs.length} de ${tot} preguntas`;
+    $("#p-body").innerHTML = dims.map((d) => `<h3 class="dim-h">${esc(d)}</h3>` + qs.filter((p) => p.dim === d).map((p) => `
+      <div class="q">
+        <span class="qn" aria-label="Pregunta ${esc(p.n)}">${esc(p.n)}</span>
+        <div>
+          <div class="qt">${fmtPregunta(p.q)}</div>
+          ${p.ops.length ? `<div class="ops-t">Opciones de respuesta</div><ul class="ops">${p.ops.map((o) => `<li>${esc(o)}</li>`).join("")}</ul>` : ""}
+        </div>
+      </div>`).join("")).join("") || `<div class="empty">No hay preguntas que coincidan con la búsqueda.</div>`;
+    $("#p-body").scrollTop = 0;
+  }
+
   function renderTextosSellos() {
     const C = CONTENIDO_SELLOS;
     $$("[data-text-s]").forEach((el) => (el.textContent = C[el.dataset.textS] ?? ""));
@@ -2398,7 +2602,8 @@ const MAPA_AR = {"proj": {"minx": -73.568399, "maxy": -21.786938, "k": 0.7880107
   function abrirPanel(id) {
     const e = statsEjes().find((x) => x.id === id);
     if (!e) return;
-    ejeAbierto = id; selloAbierto = null;
+    ejeAbierto = id; selloAbierto = null; icilAbierto = false;
+    $("#panel").classList.remove("apartado-p"); $("#p-icil").hidden = true; $("#p-kicker").parentElement.hidden = false;
     $("#p-kicker").textContent = "Eje de análisis";
     $("#p-title").textContent = e.nombre;
     $("#p-stats").innerHTML = `<div class="p-stat"><b>${e.total}</b><span>Preguntas</span></div><div class="p-stat"><b>${e.cm}</b><span>Criterios mínimos</span></div><div class="p-stat"><b>${e.dims.length}</b><span>Dimensiones</span></div>`;
@@ -2410,7 +2615,8 @@ const MAPA_AR = {"proj": {"minx": -73.568399, "maxy": -21.786938, "k": 0.7880107
   function abrirPanelSello(nombre) {
     const s = statsSellos().lista.find((x) => x.nombre === nombre);
     if (!s) return;
-    selloAbierto = nombre; ejeAbierto = null;
+    selloAbierto = nombre; ejeAbierto = null; icilAbierto = false;
+    $("#panel").classList.remove("apartado-p"); $("#p-icil").hidden = true; $("#p-kicker").parentElement.hidden = false;
     $("#p-kicker").textContent = "Sello RIL";
     $("#p-title").textContent = s.nombre;
     $("#p-stats").innerHTML = `<div class="p-stat"><b>${s.ciudades}</b><span>${s.ciudades === 1 ? "Ciudad" : "Ciudades"}</span></div><div class="p-stat"><b>${s.rs.length}</b><span>Sellos otorgados</span></div><div class="p-stat"><b>${s.anios.join(" · ")}</b><span>${s.anios.length === 1 ? "Año" : "Años"}</span></div>`;
@@ -2443,7 +2649,7 @@ const MAPA_AR = {"proj": {"minx": -73.568399, "maxy": -21.786938, "k": 0.7880107
     const ov = $("#overlay"), pn = $("#panel");
     ov.classList.remove("open"); pn.classList.remove("open"); document.body.classList.remove("lock");
     setTimeout(() => { ov.hidden = true; pn.hidden = true; }, 250);
-    ejeAbierto = null; selloAbierto = null;
+    ejeAbierto = null; selloAbierto = null; icilAbierto = false;
     if (ultimoFoco && document.contains(ultimoFoco)) ultimoFoco.focus();
   }
 
@@ -2478,7 +2684,7 @@ const MAPA_AR = {"proj": {"minx": -73.568399, "maxy": -21.786938, "k": 0.7880107
   }
 
   /* ---------- avisos de fuente de datos ---------- */
-  const RESPALDOS = () => ({ preguntas: RESPALDO_PREGUNTAS, ciudades: RESPALDO_CIUDADES, sellos: RESPALDO_SELLOS, maestra: RESPALDO_MAESTRA });
+  const RESPALDOS = () => ({ preguntas: RESPALDO_PREGUNTAS, ciudades: RESPALDO_CIUDADES, sellos: RESPALDO_SELLOS, maestra: RESPALDO_MAESTRA, icil: RESPALDO_ICIL });
   const cargando = new Set();
   function renderAvisos() {
     const R = RESPALDOS();
@@ -2491,7 +2697,7 @@ const MAPA_AR = {"proj": {"minx": -73.568399, "maxy": -21.786938, "k": 0.7880107
         el.hidden = false; el.className = "data-note"; el.innerHTML = `${svg("info")} Mostrando datos al ${fr}`; el.title = "No se pudo leer la planilla en línea; se muestra la copia de respaldo.";
       } else el.hidden = true;
     });
-    const B = { preguntas: "updPreguntas", ciudades: "updCiudades", sellos: "updSellos", maestra: "updMaestra" };
+    const B = { preguntas: "updPreguntas", ciudades: "updCiudades", sellos: "updSellos", maestra: "updMaestra", icil: "updIcil" };
     Object.entries(B).forEach(([k, bind]) => {
       if (cargando.has(k) && !estado.cargadoEn[k]) bindAll(bind, "cargando…");
       else if (!cargando.has(k)) bindAll(bind, estado.fuente[k] === "vivo" ? `actualizados al ${fmtFechaHora(estado.cargadoEn[k])} (planilla en línea)` : `datos al ${fmtFecha(fechaISO(R[k].fecha))} (copia de respaldo)`);
@@ -2502,7 +2708,7 @@ const MAPA_AR = {"proj": {"minx": -73.568399, "maxy": -21.786938, "k": 0.7880107
   function renderTodo() {
     armarReconocimientos();
     renderEjes(); renderResumenCiudades(); renderNiveles(); renderFiltros(); renderCiudades();
-    renderTotalesV3(); renderSellosInfo(); renderSellosFiltros(); renderSellosCiudades(); renderMapaFiltros();
+    renderTotalesV3(); renderIcil(); renderSellosInfo(); renderSellosFiltros(); renderSellosCiudades(); renderMapaFiltros();
     if (document.body.dataset.sec === "mapa") renderMapaTodo();
     if (ejeAbierto) renderPreguntas();
   }
@@ -2512,9 +2718,10 @@ const MAPA_AR = {"proj": {"minx": -73.568399, "maxy": -21.786938, "k": 0.7880107
     document.addEventListener("click", (ev) => {
       const up = ev.target.closest("[data-actualizar]");
       if (up) { actualizarDesdeBoton(up.dataset.actualizar); return; }
-      const t = ev.target.closest("[data-eje],[data-sello],[data-ir-sello],[data-prov],[data-nivel],[data-toggle],[data-ir-nivel],[data-limpiar],#limpiar,#overlay,#p-close,[data-sf-prov],[data-sf-anio],#s-limpiar,[data-s-limpiar],[data-mf-tipo],[data-mf-color],#m-limpiar,[data-m-limpiar],[data-mprov],[data-mcity]");
+      const t = ev.target.closest("[data-icil],[data-eje],[data-sello],[data-ir-sello],[data-prov],[data-nivel],[data-toggle],[data-ir-nivel],[data-limpiar],#limpiar,#overlay,#p-close,[data-sf-prov],[data-sf-anio],#s-limpiar,[data-s-limpiar],[data-mf-tipo],[data-mf-color],#m-limpiar,[data-m-limpiar],[data-mprov],[data-mcity]");
       if (!t) return;
-      if (t.dataset.eje) abrirPanel(t.dataset.eje);
+      if ("icil" in t.dataset) abrirPanelIcil(t.dataset.icil);
+      else if (t.dataset.eje) abrirPanel(t.dataset.eje);
       else if (t.dataset.sello) abrirPanelSello(t.dataset.sello);
       else if (t.dataset.irSello) { estado.fs = { ...estado.fs, q: "", prov: null, anio: null, sello: t.dataset.irSello }; $("#sq-ciudad").value = ""; cerrarPanel(); renderSellosFiltros(); renderSellosCiudades(); }
       else if (t.id === "overlay" || t.id === "p-close") cerrarPanel();
@@ -2543,7 +2750,7 @@ const MAPA_AR = {"proj": {"minx": -73.568399, "maxy": -21.786938, "k": 0.7880107
     document.addEventListener("keydown", (e) => {
       const t = e.target;
       if ((e.key === "Enter" || e.key === " ") && t && (t.dataset?.mprov || t.dataset?.mcity)) { e.preventDefault(); t.dispatchEvent(new MouseEvent("click", { bubbles: true })); return; }
-      if (!ejeAbierto && !selloAbierto) return;
+      if (!ejeAbierto && !selloAbierto && !icilAbierto) return;
       if (e.key === "Escape") cerrarPanel();
       if (e.key === "Tab") { // mantener el foco dentro del panel
         const f = $$('#panel button, #panel input, #panel summary, #panel a, #panel [tabindex="0"]').filter((x) => x.offsetParent !== null);
@@ -2555,6 +2762,8 @@ const MAPA_AR = {"proj": {"minx": -73.568399, "maxy": -21.786938, "k": 0.7880107
     $("#q-ciudad").addEventListener("input", (e) => { estado.filtros.q = e.target.value; renderCiudades(); });
     $("#orden").addEventListener("change", (e) => { estado.filtros.orden = e.target.value; renderCiudades(); });
     $("#p-solo-cm").addEventListener("change", renderPreguntas);
+    $("#pi-q").addEventListener("input", renderIcilPanel);
+    $("#pi-dim").addEventListener("change", renderIcilPanel);
     $("#sq-ciudad").addEventListener("input", (e) => { estado.fs.q = e.target.value; renderSellosCiudades(); });
     $("#sf-sello").addEventListener("change", (e) => { estado.fs.sello = e.target.value; renderSellosFiltros(); renderSellosCiudades(); });
     $("#s-orden").addEventListener("change", (e) => { estado.fs.orden = e.target.value; renderSellosCiudades(); });
@@ -2575,7 +2784,7 @@ const MAPA_AR = {"proj": {"minx": -73.568399, "maxy": -21.786938, "k": 0.7880107
       const io = new IntersectionObserver((ents) => ents.forEach((en) => {
         if (en.isIntersecting) $$("[data-subnav] a").forEach((a) => a.classList.toggle("on", a.getAttribute("href") === "#" + en.target.id));
       }), { rootMargin: "-45% 0px -50% 0px" });
-      ["objetivo", "ejes", "condiciones", "niveles", "adhesion", "sellos-que", "sellos-como", "sellos-requisitos", "sellos-tematicas", "sellos-numeros"]
+      ["objetivo", "ejes", "condiciones", "niveles", "adhesion", "clima-inversiones", "sellos-que", "sellos-como", "sellos-requisitos", "sellos-tematicas", "sellos-numeros"]
         .forEach((id) => { const el = document.getElementById(id); if (el) io.observe(el); });
     }
   }
@@ -2610,6 +2819,11 @@ const MAPA_AR = {"proj": {"minx": -73.568399, "maxy": -21.786938, "k": 0.7880107
       const rows = await leerHoja(FUENTES.sellos.sheetId, FUENTES.sellos);
       if (!procesarSellos(rows).length) throw new Error("Planilla de sellos vacía");
       setSellos(rows);
+    },
+    icil: async () => {
+      const rows = await leerHoja(FUENTES.icil.sheetId, FUENTES.icil);
+      if (procesarIcil(rows).length < 5) throw new Error("Índice sin preguntas");
+      setIcil(rows);
     },
     maestra: async () => {
       const rows = await leerHoja(FUENTES.maestra.sheetId, FUENTES.maestra);
@@ -2650,7 +2864,7 @@ const MAPA_AR = {"proj": {"minx": -73.568399, "maxy": -21.786938, "k": 0.7880107
 
   /* ---------- inicio ---------- */
   document.addEventListener("DOMContentLoaded", () => {
-    estado.fuente.sellos = "respaldo"; estado.fuente.maestra = "respaldo";
+    estado.fuente.sellos = "respaldo"; estado.fuente.maestra = "respaldo"; estado.fuente.icil = "respaldo";
     estado.fs = { q: "", sello: "", prov: null, anio: null, orden: "nombre" };
     estado.fm = { q: "", prov: "", region: "", partido: "", anio: "", tam: "", tipo: "", sello: "", color: "cant" };
     renderTextos(); renderTextosSellos(); prepararRecursos();
@@ -2658,13 +2872,14 @@ const MAPA_AR = {"proj": {"minx": -73.568399, "maxy": -21.786938, "k": 0.7880107
     setCiudades(RESPALDO_CIUDADES.filas);
     estado.sellos = procesarSellos(RESPALDO_SELLOS.filas);
     estado.maestra = procesarMaestra(RESPALDO_MAESTRA.filas);
+    setIcil(RESPALDO_ICIL.filas);
     renderTodo(); eventos(); mostrarVista(); renderAvisos();
-    ["preguntas", "ciudades", "sellos", "maestra"].forEach(cargarUno);   // …y se reemplaza por los datos en vivo al llegar
-    Promise.all(["preguntas", "ciudades", "sellos", "maestra"].map((k) => enCurso[k])).then(() => { renderTodo(); renderAvisos(); });
+    ["preguntas", "ciudades", "sellos", "maestra", "icil"].forEach(cargarUno);   // …y se reemplaza por los datos en vivo al llegar
+    Promise.all(["preguntas", "ciudades", "sellos", "maestra", "icil"].map((k) => enCurso[k])).then(() => { renderTodo(); renderAvisos(); });
   });
 
   // Exponer funciones de lectura para pruebas
-  window.__tablero = { parseCSV, procesarPestana, procesarCiudades, procesarSellos, procesarMaestra, estado };
+  window.__tablero = { parseCSV, procesarIcil, procesarPestana, procesarCiudades, procesarSellos, procesarMaestra, estado };
 })();
 </script>
 
