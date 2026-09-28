@@ -704,6 +704,7 @@ body[data-sec="mapa"] { --acc: var(--c-mapa); }
 .mcity.proc.eval { border-color: var(--c-eval); }
 .mcity.proc.eval .tot b { color: var(--c-eval-ink); }
 .mcity.proc.pot .tot b { color: var(--c-pot); }
+.mcity .tambien { font-size: 12px; color: var(--dgray); border-top: 1px solid var(--cream2); padding-top: 6px; }
 </style>
 </head>
 <body>
@@ -2783,21 +2784,32 @@ const MAPA_AR = {"proj": {"minx": -73.568399, "maxy": -21.786938, "k": 0.7880107
         <div class="tot"><b>${rs.length}</b><span>${rs.length === 1 ? "Reconocimiento" : "Reconocimientos"}</span></div></div>
         <div class="rchips">${ord.map((r) => r.tipo === "cert"
           ? `<span class="rchip cert">${svg("check")}${esc(r.nombre)} <span class="yr">${r.anio || ""}</span></span>`
-          : `<span class="rchip sello">${svg("medalla")}${esc(r.nombre)} <span class="yr">${r.anio || ""}</span></span>`).join("")}${(porProc.get(c.key) || []).map(chipProc).join("")}</div>
+          : `<span class="rchip sello">${svg("medalla")}${esc(r.nombre)} <span class="yr">${r.anio || ""}</span></span>`).join("")}</div>
       </article>`;
     }).join("") : (soloProc.length ? "" : `<div class="empty">No hay ciudades con esos filtros. <button class="linkbtn" data-m-limpiar>Limpiar filtros</button></div>`);
-    // Ciudades que todavía no tienen reconocimientos, en dos niveles: en evaluación (si tienen al menos uno en evaluación) y con potencialidad
-    const listaP = soloProc.map((k) => ({ c: estado.fichas.get(k), ps: porProc.get(k) })).sort((a, b) => a.c.ciudad.localeCompare(b.c.ciudad, "es"));
-    const niveles = { eval: listaP.filter((x) => x.ps.some((p) => p.est === "eval")), pot: listaP.filter((x) => !x.ps.some((p) => p.est === "eval")) };
-    const tarjeta = ({ c, ps }, est) => `<article class="card mcity proc ${est}">
+    // Cada ciudad en su categoría: en evaluación y con potencialidad. Si una ciudad está en más de una, se repite.
+    const niveles = {};
+    ["eval", "pot"].forEach((est) => {
+      niveles[est] = [...porProc.entries()].map(([k, all]) => ({ c: estado.fichas.get(k), ps: all.filter((p) => p.est === est), all, rs: ciudades.get(k) || [] }))
+        .filter((x) => x.ps.length).sort((a, b) => a.c.ciudad.localeCompare(b.c.ciudad, "es"));
+    });
+    const tambien = ({ ps, all, rs }) => {
+      const otros = [];
+      if (rs.length) otros.push(`${rs.length} ${rs.length === 1 ? "reconocimiento otorgado" : "reconocimientos otorgados"}`);
+      const resto = all.filter((p) => p.est !== ps[0].est);
+      if (resto.length) otros.push(`${resto.length} ${resto[0].est === "eval" ? "en evaluación" : (resto.length === 1 ? "potencial" : "potenciales")}`);
+      return otros.length ? `<div class="tambien">También: ${otros.join(" · ")}</div>` : "";
+    };
+    const tarjeta = ({ c, ps, all, rs }, est) => `<article class="card mcity proc ${est}">
         <div class="row1"><div><h3>${esc(c.ciudad)}</h3><div class="prov">${svg("pin", 'width="13" height="13" style="vertical-align:-2px"')} ${esc(c.provincia)}${c.region && c.region !== "Sin dato" ? " · " + esc(c.region) : ""}${c.pob != null ? " · " + esc(fmtPob(c.pob)) : ""}</div></div>
         <div class="tot"><b>${ps.length}</b><span>${ps.length === 1 ? "Reconocimiento" : "Reconocimientos"}</span></div></div>
-        <div class="rchips">${[...ps].sort((a, b) => (a.est === "eval" ? 0 : 1) - (b.est === "eval" ? 0 : 1) || (a.anio || 0) - (b.anio || 0)).map(chipProc).join("")}</div>
+        <div class="rchips">${[...ps].sort((a, b) => (a.anio || 0) - (b.anio || 0) || a.nombre.localeCompare(b.nombre, "es")).map(chipProc).join("")}</div>
+        ${tambien({ ps, all, rs })}
       </article>`;
     ["eval", "pot"].forEach((est) => {
       const cap = est === "eval" ? "Eval" : "Pot", l = niveles[est], t = $(`[data-render="m${cap}T"]`);
       t.hidden = !l.length;
-      t.innerHTML = `${esc(ESTADOS_PROCESO[est].seccion)} <span style="color:var(--dgray);font-weight:700;font-size:15px">(${l.length}) · todavía sin reconocimientos</span>`;
+      t.innerHTML = `${esc(ESTADOS_PROCESO[est].seccion)} <span style="color:var(--dgray);font-weight:700;font-size:15px">(${l.length})</span>`;
       $(`[data-render="m${cap}"]`).innerHTML = l.map((x) => tarjeta(x, est)).join("");
     });
   }
