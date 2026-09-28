@@ -443,7 +443,10 @@ body.lock { overflow: hidden; }
   --c-sel: #17808D;                /* Sellos temáticos (principal) */
   --c-sel2: #2EA4AA;               /* Sellos temáticos (secundario, decorativo) */
   --c-sel-soft: #E3F2F2;
-  --c-mapa: #1B4F8A;               /* Mapa de reconocimientos (azul AR del manual) */
+  --c-mapa: #1B4F8A;
+  --c-eval: #EC5E1A; --c-eval-ink: #A8400F;   /* ciudades en evaluación (naranja de líneas de acción del manual) */
+  --c-pot: #4A4643;                            /* ciudades potenciales */
+  --c-pend: #6F6A64;                           /* gráficos: reconocimientos aún no entregados */               /* Mapa de reconocimientos (azul AR del manual) */
   --c-cert-soft: #F8E7E9;
 }
 body[data-sec="sellos"] { --acc: var(--c-sel); }
@@ -584,7 +587,7 @@ body[data-sec="mapa"] { --acc: var(--c-mapa); }
 .hb .tr { height: 14px; background: var(--cream2); border-radius: var(--r); overflow: hidden; display: flex; }
 .hb .tr .c { background: var(--c-cert); }
 .hb .tr .s { background: var(--c-sel); }
-.ch-legend { display: flex; gap: 14px; font-size: 12px; color: var(--dgray); margin-bottom: 10px; }
+.ch-legend { display: flex; flex-wrap: wrap; gap: 6px 14px; font-size: 12px; color: var(--dgray); margin-bottom: 10px; }
 .ch-legend i { display: inline-block; width: 12px; height: 10px; border-radius: 2px; margin-right: 5px; vertical-align: -1px; }
 .m-kpis { grid-template-columns: repeat(4, minmax(0, 1fr)); }
 .m-kpis .kpi .v { color: var(--c-mapa); }
@@ -675,6 +678,25 @@ body[data-sec="mapa"] { --acc: var(--c-mapa); }
 .ops li { font-size: 13.5px; background: var(--cream); border: 1px solid var(--cream2); border-radius: var(--r); padding: 6px 10px; }
 .ops-t { font-family: var(--f-title); font-weight: 800; font-size: 10.5px; text-transform: uppercase; letter-spacing: 1px; color: var(--gray); margin-top: 10px; }
 @media (max-width: 560px) { .apartado { padding: 18px 16px; } .p-icil .row2 { grid-template-columns: 1fr; } }
+
+/* Mapa: ciudades en proceso */
+.m-kpis { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.m-kpis .kpi.eval { --acc: var(--c-eval); border-style: dashed; }
+.m-kpis .kpi.eval .v { color: var(--c-eval-ink); }
+.m-kpis .kpi.pot { --acc: var(--c-pot); border-style: dashed; }
+.m-kpis .kpi.pot .v { color: var(--c-pot); }
+.m-map .pt.eval { fill: #fff; stroke: var(--c-eval); stroke-width: 2.4; }
+.m-map .pt.pot { fill: #fff; stroke: #6F6A64; stroke-width: 1.8; stroke-dasharray: 2.4 1.5; }
+.rchip.proc { background: var(--white); border-style: dashed; border-color: #9A948C; color: var(--dgray); }
+.rchip.proc.eval { border-style: solid; border-color: var(--c-eval); color: var(--c-eval-ink); background: #FDF0E9; }
+.hb .tr .p { background: var(--c-pend); }
+.hb .v small { font-family: var(--f-body); font-weight: 600; font-size: 11px; color: var(--c-pend); margin-left: 2px; }
+.m-side .hb { grid-template-columns: 120px 1fr 52px; }
+.m-side .hb.cob { grid-template-columns: 120px 1fr 92px; }
+.hb.cob .tr .p { background: var(--c-pend); }
+.mcity.proc { border-style: dashed; }
+.mcity.proc .tot b { color: var(--dgray); }
+.m-tip .tp-h { margin-top: 6px; font-family: var(--f-title); font-weight: 800; font-size: 10.5px; text-transform: uppercase; letter-spacing: 1px; opacity: .8; }
 </style>
 </head>
 <body>
@@ -1005,11 +1027,11 @@ body[data-sec="mapa"] { --acc: var(--c-mapa); }
 <div id="vista-mapa" data-view="mapa" hidden>
   <section class="section" id="mapa" aria-labelledby="t-mapa">
     <div class="sec-top">
-      <div class="label"><span class="dot"></span>Mapa de reconocimientos <span class="data-note" data-note="ciudades sellos maestra" hidden></span></div>
+      <div class="label"><span class="dot"></span>Mapa de reconocimientos <span class="data-note" data-note="ciudades sellos maestra proceso" hidden></span></div>
       <div class="upd-box"><button class="btn-upd" data-actualizar="mapa" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 12a8 8 0 0 1-14.3 4.9M4 12A8 8 0 0 1 18.3 7.1"/><path d="M18.5 3v4.3h-4.3M5.5 21v-4.3h4.3"/></svg><span>Actualizar datos</span></button><span class="upd-msg" data-msg="mapa" role="status"></span></div>
     </div>
     <h2 class="h2" id="t-mapa">Dónde están las ciudades reconocidas</h2>
-    <p class="lead">Ciudades con Certificación en Gestión Eficiente o con un Sello RIL. Combiná los filtros para explorar; el mapa, los gráficos y el listado se actualizan juntos.</p>
+    <p class="lead">Ciudades con Certificación en Gestión Eficiente o con un Sello RIL, y las que están en evaluación o son potenciales. Combiná los filtros para explorar; el mapa, los gráficos y el listado se actualizan juntos.</p>
 
     <div class="grid m-kpis kpis" data-render="mKpis"></div>
 
@@ -1025,6 +1047,7 @@ body[data-sec="mapa"] { --acc: var(--c-mapa); }
         <div class="m-f"><label for="mf-sello">Temática del sello</label><select class="fsel" id="mf-sello" data-mf="sello"></select></div>
       </div>
       <div class="frow" role="group" aria-labelledby="mfl-tipo"><span class="fl" id="mfl-tipo">Reconocimiento</span><span data-render="mfTipo" class="frow"></span></div>
+      <div class="frow" role="group" aria-labelledby="mfl-est"><span class="fl" id="mfl-est">Mostrar</span><span data-render="mfEst" class="frow"></span></div>
     </div>
     <div class="results"><span data-bind="mResultados" aria-live="polite"></span><button class="linkbtn" id="m-limpiar" hidden>Limpiar filtros</button></div>
 
@@ -1038,14 +1061,16 @@ body[data-sec="mapa"] { --acc: var(--c-mapa); }
       </div>
       <div class="m-side">
         <div class="card chart"><h3 data-render="chCobT">Cobertura por provincia</h3><div data-render="chCob"></div><p class="ch-nota" data-render="chCobNota"></p></div>
-        <div class="card chart"><h3>Reconocimientos por año</h3><div class="ch-legend"><span><i style="background:var(--c-cert)"></i>Certificación</span><span><i style="background:var(--c-sel)"></i>Sellos</span></div><div data-render="chAnio"></div></div>
-        <div class="card chart"><h3>Por región</h3><div data-render="chRegion"></div></div>
+        <div class="card chart"><h3>Reconocimientos por año</h3><div class="ch-legend"><span><i style="background:var(--c-cert)"></i>Certificación</span><span><i style="background:var(--c-sel)"></i>Sellos</span><span><i style="background:var(--c-pend)"></i>En proceso (aún no entregados)</span></div><div data-render="chAnio"></div></div>
+        <div class="card chart"><h3>Por región</h3><p class="ch-nota" style="margin:-6px 0 8px">Cantidad de reconocimientos; en gris, los que están en proceso.</p><div data-render="chRegion"></div></div>
         <div class="card chart"><h3>Por tamaño de ciudad</h3><div data-render="chTam"></div></div>
       </div>
     </div>
 
     <h3 class="sub-h" style="margin-top:22px">Ciudades <span style="color:var(--dgray);font-weight:700;font-size:15px" data-bind="mResultadosCorto"></span></h3>
     <div class="grid m-list" data-render="mLista"></div>
+    <h3 class="sub-h" style="margin-top:26px" data-render="mProcT" hidden></h3>
+    <div class="grid m-list" data-render="mProc"></div>
   </section>
 </div>
 </main>
@@ -1083,6 +1108,7 @@ body[data-sec="mapa"] { --acc: var(--c-mapa); }
       <div>Certificaciones: <b data-bind="updCiudades">cargando…</b></div>
       <div>Sellos: <b data-bind="updSellos">cargando…</b></div>
       <div>Datos de ciudades: <b data-bind="updMaestra">cargando…</b></div>
+      <div>Ciudades en proceso: <b data-bind="updProceso">cargando…</b></div>
       <div>Índice de clima de inversiones: <b data-bind="updIcil">cargando…</b></div>
     </div>
     <div class="site"><a href="https://redinnovacionlocal.org" target="_blank" rel="noopener">redinnovacionlocal.org</a> · <span data-bind="anio">2026</span></div>
@@ -1108,6 +1134,8 @@ const FUENTES = {
   // Sellos: Ciudad | Provincia | Entrega | Sello RIL otorgado | Fecha | Puntaje
   maestra:  { sheetId: "1S3xtEKzsL6jYjwXsxK7yyUNEjq4bOUwBz5SOTBPVmdI", sheet: "Ciudades" },
   // Apartado "Índice de Clima de Inversiones Local": planilla "Calificadora de Oportunidades - Indicadores", pestaña "Indicadores - COL"
+  proceso:  { sheetId: "1S3xtEKzsL6jYjwXsxK7yyUNEjq4bOUwBz5SOTBPVmdI", sheet: "Ciudades en proceso" },
+  // Ciudades en proceso: Reconocimiento | Ciudad | Provincia | Estado (En evaluación / Potenciales) | Año estimado de entrega
   icil:     { sheetId: "1sBLPaC1kmXkYjDcQIrAtTXx5ynLNPZAcSYa2Ie3C0ag", gid: "1322716090" }
   // Ciudades: Ciudad | Provincia | Región | Población (Censo 2022) | Partido político | Latitud | Longitud  (el tamaño se calcula con la población)
 };
@@ -1204,7 +1232,7 @@ const GRUPOS = {
   icil: ["icil"],
   ciudades: ["ciudades"],
   sellos: ["sellos", "maestra"],
-  mapa: ["ciudades", "sellos", "maestra"]
+  mapa: ["ciudades", "sellos", "maestra", "proceso"]
 };
 
 // Sellos: nombres a unificar (plural → singular) y temáticas a ocultar
@@ -1292,6 +1320,12 @@ const CONTENIDO_ICIL = {
   titulo: "Índice de Clima de Inversiones Local",
   bajada: "Otro aspecto de una gestión local eficiente.",
   boton: "Ver el índice"
+};
+
+// Mapa: ciudades en proceso (pestaña "Ciudades en proceso"). Cómo se muestra cada estado.
+const ESTADOS_PROCESO = {
+  eval: { label: "En evaluación", plural: "En evaluación", kpi: "Ciudades en evaluación" },
+  pot:  { label: "Potencial", plural: "Potenciales", kpi: "Ciudades potenciales" }
 };
 
 const RESPALDO_PREGUNTAS = {
@@ -1552,51 +1586,148 @@ const RESPALDO_SELLOS = {
   ]
 };
 
+const RESPALDO_PROCESO = {
+  fecha: "2026-09-28",
+  // Copia de la pestaña "Ciudades en proceso"
+  filas: [
+    ["Reconocimiento", "Ciudad", "Provincia", "Estado", "Año estimado de entrega"],
+    ["Certificación en Gestión Eficiente", "Salta", "Salta", "En evaluación", "2026"],
+    ["Certificación en Gestión Eficiente", "Oberá", "Misiones", "En evaluación", "2026"],
+    ["Ciudad por la Seguridad", "San Miguel de Tucumán", "Tucumán", "En evaluación", "2026"],
+    ["Ciudad de la Educación", "San Miguel de Tucumán", "Tucumán", "En evaluación", "2026"],
+    ["Ciudad Emprendedora", "Formosa", "Formosa", "En evaluación", "2026"],
+    ["Ciudad por la Naturaleza y Espacio Público", "Formosa", "Formosa", "En evaluación", "2026"],
+    ["Ciudad Planificada", "Formosa", "Formosa", "En evaluación", "2026"],
+    ["Ciudad Circular", "Tigre", "Buenos Aires", "Potenciales", "2027"],
+    ["Ciudad Circular", "Trenque Lauquen", "Buenos Aires", "Potenciales", "2027"],
+    ["Ciudad Circular", "Rosario", "Santa Fe", "Potenciales", "2027"],
+    ["Eficiencia en la Flota Municipal", "9 de julio", "Buenos Aires", "Potenciales", "2027"],
+    ["Eficiencia en la Flota Municipal", "General Roca", "Río Negro", "Potenciales", "2027"],
+    ["Eficiencia en la Flota Municipal", "San Isidro", "Buenos Aires", "Potenciales", "2027"],
+    ["Eficiencia en la Flota Municipal", "Rosario", "Santa Fe", "Potenciales", "2027"],
+    ["Eficiencia en la Flota Municipal", "Yerba Buena", "Tucumán", "Potenciales", "2027"],
+    ["Ciudad Digital", "San Francisco", "Córdoba", "Potenciales", "2026"],
+    ["Ciudad Digital", "Corrientes", "Corrientes", "Potenciales", "2027"],
+    ["Ciudad Digital", "Rosario", "Santa Fe", "Potenciales", "2026"],
+    ["Ciudad Digital", "Tres de Febrero", "Buenos Aires", "Potenciales", "2027"],
+    ["Ciudad Digital", "Paraná", "Entre Ríos", "Potenciales", "2027"],
+    ["Ciudad por la Naturaleza y Espacio Público", "Luján de Cuyo", "Mendoza", "Potenciales", "2027"],
+    ["Ciudad de la Energía", "Guaymallén", "Mendoza", "Potenciales", "2027"],
+    ["Ciudad de la Energía", "Mendoza", "Mendoza", "Potenciales", "2027"],
+    ["Eficiencia en las Finanzas Locales", "General San Martín", "Buenos Aires", "Potenciales", "2027"],
+    ["Ciudad por la Movilidad Urbana", "Salta", "Salta", "Potenciales", "2027"],
+    ["Ciudad por la Movilidad Urbana", "Venado Tuerto", "Santa Fe", "Potenciales", "2027"],
+    ["Ciudad por la Seguridad", "Jesús María", "Córdoba", "Potenciales", "2027"],
+    ["Ciudad por la Seguridad", "La Falda", "Córdoba", "Potenciales", "2027"],
+    ["Ciudad por la Seguridad", "Malagueño", "Córdoba", "Potenciales", "2027"],
+    ["Ciudad por la Seguridad", "Godoy Cruz", "Mendoza", "Potenciales", "2027"],
+    ["Ciudad por la Seguridad", "Las Varillas", "Córdoba", "Potenciales", "2027"],
+    ["Ciudad Planificada", "Venado Tuerto", "Santa Fe", "Potenciales", "2027"],
+    ["Ciudad del Conocimiento", "Pilar", "Buenos Aires", "Potenciales", "2027"],
+    ["Ciudad del Conocimiento", "Concepción", "Tucumán", "Potenciales", "2027"],
+    ["Ciudad del Conocimiento", "Pergamino", "Buenos Aires", "Potenciales", "2027"],
+    ["Desarrollo Económico", "Concepción del Uruguay", "Entre Ríos", "Potenciales", "2027"],
+    ["Desarrollo Económico", "Crespo", "Entre Ríos", "Potenciales", "2027"],
+    ["Desarrollo Económico", "Viedma", "Río Negro", "Potenciales", "2027"],
+    ["Desarrollo Económico", "Puerto Madryn", "Chubut", "Potenciales", "2027"],
+    ["Desarrollo Económico", "General Pico", "La Pampa", "Potenciales", "2027"],
+    ["Ciudad Emprendedora", "Río Grande", "Tierra del Fuego", "Potenciales", "2027"],
+    ["Ciudad Emprendedora", "San Salvador de Jujuy", "Jujuy", "Potenciales", "2027"],
+    ["Ciudad Emprendedora", "La Puerta", "Córdoba", "Potenciales", "2027"],
+    ["Ciudad Emprendedora", "Escobar", "Buenos Aires", "Potenciales", "2027"],
+    ["Ciudad Emprendedora", "9 de julio", "Buenos Aires", "Potenciales", "2027"],
+    ["Ciudad Emprendedora", "Venado Tuerto", "Santa Fe", "Potenciales", "2027"],
+    ["Ciudad por la Primera Infancia", "Tunuyán", "Mendoza", "Potenciales", "2027"],
+    ["Ciudad por la Primera Infancia", "Concepción", "Tucumán", "Potenciales", "2027"],
+    ["Ciudad por la Primera Infancia", "Yerba Buena", "Tucumán", "Potenciales", "2027"],
+    ["Certificación en Gestión Eficiente", "General Pico", "La Pampa", "Potenciales", "2027"],
+    ["Certificación en Gestión Eficiente", "San Juan", "San Juan", "Potenciales", "2028"],
+    ["Certificación en Gestión Eficiente", "Magdalena", "Buenos Aires", "Potenciales", "2027"],
+    ["Certificación en Gestión Eficiente", "Río Primero", "Córdoba", "Potenciales", "2027"],
+    ["Certificación en Gestión Eficiente", "Paraná", "Entre Ríos", "Potenciales", "2027"],
+    ["Certificación en Gestión Eficiente", "Mendiolaza", "Córdoba", "Potenciales", "2028"],
+    ["Certificación en Gestión Eficiente", "Rada Tilly", "Chubut", "Potenciales", "2027"],
+    ["Certificación en Gestión Eficiente", "Río Cuarto", "Córdoba", "Potenciales", "2027"],
+    ["Certificación en Gestión Eficiente", "Trenque Lauquen", "Buenos Aires", "Potenciales", "2027"],
+    ["Certificación en Gestión Eficiente", "Neuquén", "Neuquén", "Potenciales", "2027"],
+    ["Certificación en Gestión Eficiente", "Loberia", "Buenos Aires", "Potenciales", "2027"],
+    ["Certificación en Gestión Eficiente", "Córdoba", "Córdoba", "Potenciales", "2027"]
+  ]
+};
+
 const RESPALDO_MAESTRA = {
-  fecha: "2026-09-23",
+  fecha: "2026-09-28",
   // Copia de la pestaña "Ciudades"
   filas: [
     ["Ciudad", "Provincia", "Región", "Población (Censo 2022)", "Partido político", "Latitud", "Longitud", "Observaciones"],
-    ["Alta Gracia", "Córdoba", "Pampeana", "60.373", "PJ", "-31,64979", "-64,42987", ""],
-    ["Concepción del Uruguay", "Entre Ríos", "Pampeana", "80.207", "PJ", "-32,48466", "-58,23212", ""],
-    ["Concordia", "Entre Ríos", "Pampeana", "157.323", "PJ", "-31,39745", "-58,0172", ""],
-    ["Córdoba", "Córdoba", "Pampeana", "1.505.250", "PJ", "-31,41505", "-64,17911", ""],
-    ["Despeñaderos", "Córdoba", "Pampeana", "7.608", "Verificar", "-31,81428", "-64,29478", "Partido político a verificar."],
-    ["Escobar", "Buenos Aires", "Pampeana", "255.432", "PJ", "-34,34547", "-58,79281", ""],
-    ["General Madariaga", "Buenos Aires", "Pampeana", "23.019", "PJ", "-37,00196", "-57,13584", ""],
-    ["General Pico", "La Pampa", "Pampeana", "67.240", "PJ", "-35,6593", "-63,75787", ""],
-    ["Godoy Cruz", "Mendoza", "Cuyo", "195.183", "UCR", "-32,92965", "-68,84493", ""],
-    ["Jesús María", "Córdoba", "Pampeana", "37.498", "Libertad Avanza", "-30,97613", "-64,09579", ""],
-    ["Junín", "Buenos Aires", "Pampeana", "101.762", "PRO", "-34,59394", "-60,94643", ""],
-    ["Laboulaye", "Córdoba", "Pampeana", "22.846", "Verificar", "-34,12863", "-63,3907", "Partido político a verificar."],
-    ["Lobería", "Buenos Aires", "Pampeana", "18.232", "UCR", "-38,16338", "-58,78185", ""],
-    ["Luján", "Buenos Aires", "Pampeana", "111.365", "PJ", "-34,56685", "-59,11451", ""],
-    ["Luján de Cuyo", "Mendoza", "Cuyo", "172.503", "UCR", "-33,03455", "-68,88458", ""],
-    ["Maipú", "Mendoza", "Cuyo", "214.412", "PJ", "-32,98116", "-68,79517", ""],
-    ["Mendoza", "Mendoza", "Cuyo", "122.840", "UCR", "-32,88973", "-68,84444", ""],
-    ["Morteros", "Córdoba", "Pampeana", "20.400", "Verificar", "-30,71067", "-62,00724", "Partido político a verificar."],
-    ["Oberá", "Misiones", "NEA", "79.528", "Frente Renovador de la Concordia", "-27,48679", "-55,12006", ""],
-    ["Pilar", "Buenos Aires", "Pampeana", "395.072", "PJ", "-34,45698", "-58,91391", ""],
-    ["Pinamar", "Buenos Aires", "Pampeana", "40.259", "PRO", "-37,11382", "-56,85808", ""],
-    ["Posadas", "Misiones", "NEA", "393.367", "Frente Renovador de la Concordia", "-27,36643", "-55,89398", ""],
-    ["Rosario", "Santa Fe", "Pampeana", "1.029.619", "Creo", "-32,94721", "-60,63318", ""],
-    ["Río Cuarto", "Córdoba", "Pampeana", "180.756", "PJ", "-33,12384", "-64,349", ""],
-    ["San Antonio de Areco", "Buenos Aires", "Pampeana", "26.582", "PJ", "-34,24364", "-59,47365", ""],
-    ["San Fernando del Valle de Catamarca", "Catamarca", "NOA", "182.203", "PJ", "-28,46901", "-65,77892", ""],
-    ["San Francisco", "Córdoba", "Pampeana", "69.047", "PJ", "-31,42494", "-62,08388", ""],
-    ["San Isidro", "Buenos Aires", "GBA", "298.777", "PRO", "-34,46988", "-58,51129", ""],
-    ["San Justo", "Santa Fe", "Pampeana", "25.080", "Verificar", "-30,78917", "-60,5933", "Partido político a verificar."],
-    ["San Miguel", "Buenos Aires", "GBA", "326.215", "PRO", "-34,54313", "-58,7092", ""],
-    ["San Miguel de Tucumán", "Tucumán", "NOA", "588.240", "PJ", "-26,83039", "-65,20378", ""],
-    ["San Nicolás", "Buenos Aires", "Pampeana", "160.882", "PRO", "-33,3384", "-60,2215", ""],
-    ["Santa Rosa", "Mendoza", "Cuyo", "19.410", "PJ", "-33,25407", "-68,15066", ""],
-    ["Tandil", "Buenos Aires", "Pampeana", "150.162", "UCR", "-37,3287", "-59,1369", ""],
-    ["Tres de Febrero", "Buenos Aires", "GBA", "366.377", "PJ", "-34,60794", "-58,56394", ""],
-    ["Venado Tuerto", "Santa Fe", "Pampeana", "82.757", "UCR", "-33,7455", "-61,96873", ""],
-    ["Villa Allende", "Córdoba", "Pampeana", "36.822", "PJ", "-31,29365", "-64,2977", "Tamaño: la base tenía B y C; se usa C (confirmado)."],
-    ["Villa Ascasubi", "Córdoba", "Pampeana", "2.730", "Verificar", "-32,16274", "-63,89242", "Partido político a verificar."],
-    ["Villa General Belgrano", "Córdoba", "Pampeana", "11.838", "Verificar", "-31,97649", "-64,55905", "Partido político a verificar."],
-    ["Yerba Buena", "Tucumán", "NOA", "102.023", "UCR", "-26,81082", "-65,28343", ""]
+    ["Alta Gracia", "Córdoba", "Pampeana", "60373", "PJ", "-31,64979", "-64,42987", ""],
+    ["Concepción del Uruguay", "Entre Ríos", "Pampeana", "86735", "PJ", "-32,48466", "-58,23212", ""],
+    ["Concordia", "Entre Ríos", "Pampeana", "180325", "UCR", "-31,39745", "-58,0172", ""],
+    ["Córdoba", "Córdoba", "Pampeana", "1505250", "PJ", "-31,41505", "-64,17911", ""],
+    ["Despeñaderos", "Córdoba", "Pampeana", "7608", "PJ", "-31,81428", "-64,29478", "Partido político a verificar."],
+    ["Escobar", "Buenos Aires", "Pampeana", "255432", "PJ", "-34,34547", "-58,79281", ""],
+    ["General Madariaga", "Buenos Aires", "Pampeana", "23019", "UCR", "-37,00196", "-57,13584", ""],
+    ["General Pico", "La Pampa", "Pampeana", "67240", "PJ", "-35,6593", "-63,75787", ""],
+    ["Godoy Cruz", "Mendoza", "Cuyo", "195183", "UCR", "-32,92965", "-68,84493", ""],
+    ["Jesús María", "Córdoba", "Pampeana", "37498", "LLA", "-30,97613", "-64,09579", ""],
+    ["Junín", "Buenos Aires", "Pampeana", "101762", "PRO", "-34,59394", "-60,94643", ""],
+    ["Laboulaye", "Córdoba", "Pampeana", "22846", "PRO", "-34,12863", "-63,3907", "Partido político a verificar."],
+    ["Lobería", "Buenos Aires", "Pampeana", "18232", "UCR", "-38,16338", "-58,78185", ""],
+    ["Luján", "Buenos Aires", "Pampeana", "111365", "PJ", "-34,56685", "-59,11451", ""],
+    ["Luján de Cuyo", "Mendoza", "Cuyo", "172503", "PRO", "-33,03455", "-68,88458", ""],
+    ["Maipú", "Mendoza", "Cuyo", "214412", "PJ", "-32,98116", "-68,79517", ""],
+    ["Mendoza", "Mendoza", "Cuyo", "122840", "UCR", "-32,88973", "-68,84444", ""],
+    ["Morteros", "Córdoba", "Pampeana", "20400", "Vecinal", "-30,71067", "-62,00724", "Partido político a verificar."],
+    ["Oberá", "Misiones", "NEA", "79528", "Frente Renovador de la Concordia", "-27,48679", "-55,12006", ""],
+    ["Pilar", "Buenos Aires", "Pampeana", "395072", "PJ", "-34,45698", "-58,91391", ""],
+    ["Pinamar", "Buenos Aires", "Pampeana", "40259", "PRO", "-37,11382", "-56,85808", ""],
+    ["Posadas", "Misiones", "NEA", "328879", "Frente Renovador de la Concordia", "-27,36643", "-55,89398", ""],
+    ["Rosario", "Santa Fe", "Pampeana", "1029619", "Creo", "-32,94721", "-60,63318", ""],
+    ["Río Cuarto", "Córdoba", "Pampeana", "180756", "PJ", "-33,12384", "-64,349", ""],
+    ["San Antonio de Areco", "Buenos Aires", "Pampeana", "26582", "LLA", "-34,24364", "-59,47365", ""],
+    ["San Fernando del Valle de Catamarca", "Catamarca", "NOA", "182203", "PJ", "-28,46901", "-65,77892", ""],
+    ["San Francisco", "Córdoba", "Pampeana", "69047", "PJ", "-31,42494", "-62,08388", ""],
+    ["San Isidro", "Buenos Aires", "GBA", "298777", "PRO", "-34,46988", "-58,51129", ""],
+    ["San Justo", "Santa Fe", "Pampeana", "25080", "UCR", "-30,78917", "-60,5933", "Partido político a verificar."],
+    ["San Miguel", "Buenos Aires", "GBA", "326215", "PRO", "-34,54313", "-58,7092", ""],
+    ["San Miguel de Tucumán", "Tucumán", "NOA", "588240", "PJ", "-26,83039", "-65,20378", ""],
+    ["San Nicolás", "Buenos Aires", "Pampeana", "160882", "HECHOS", "-33,3384", "-60,2215", ""],
+    ["Santa Rosa", "Mendoza", "Cuyo", "19410", "PJ", "-33,25407", "-68,15066", ""],
+    ["Tandil", "Buenos Aires", "Pampeana", "150162", "UCR", "-37,3287", "-59,1369", ""],
+    ["Tres de Febrero", "Buenos Aires", "GBA", "366377", "PRO", "-34,60794", "-58,56394", ""],
+    ["Venado Tuerto", "Santa Fe", "Pampeana", "82757", "UCR", "-33,7455", "-61,96873", ""],
+    ["Villa Allende", "Córdoba", "Pampeana", "36822", "PRO", "-31,29365", "-64,2977", "Tamaño: la base tenía B y C; se usa C (confirmado)."],
+    ["Villa Ascasubi", "Córdoba", "Pampeana", "2730", "PJ", "-32,16274", "-63,89242", "Partido político a verificar."],
+    ["Villa General Belgrano", "Córdoba", "Pampeana", "11838", "PJ", "-31,97649", "-64,55905", "Partido político a verificar."],
+    ["Yerba Buena", "Tucumán", "NOA", "82277", "UCR", "-26,81082", "-65,28343", ""],
+    ["9 de Julio", "Buenos Aires", "Pampeana", "52607", "PRO", "-35,44399", "-60,88457", "En 2025 pasó a Somos Buenos Aires."],
+    ["Concepción", "Tucumán", "NOA", "58104", "Juntos por el Cambio", "-27,34596", "-65,59275", "Partido del intendente a confirmar; hoy cercano a La Libertad Avanza."],
+    ["Corrientes", "Corrientes", "NEA", "430170", "UCR", "-27,46328", "-58,83923", "Intendente electo en 2025 (Claudio Polich)."],
+    ["Crespo", "Entre Ríos", "Pampeana", "24570", "Juntos por el Cambio", "-32,0307", "-60,30631", "Partido del intendente a confirmar (UCR o PRO)."],
+    ["Formosa", "Formosa", "NEA", "264452", "PJ", "-26,18521", "-58,17435", ""],
+    ["General Roca", "Río Negro", "Patagonia", "109366", "PJ", "-39,0267", "-67,57485", "En \"Ciudades en proceso\" figura como Buenos Aires: corresponde Río Negro."],
+    ["General San Martín", "Buenos Aires", "GBA", "450518", "PJ", "-34,57209", "-58,53375", ""],
+    ["Guaymallén", "Mendoza", "Cuyo", "321966", "UCR", "-32,89342", "-68,77614", ""],
+    ["La Falda", "Córdoba", "Pampeana", "16937", "UCR", "-31,09444", "-64,48294", ""],
+    ["La Puerta", "Córdoba", "Pampeana", "2788", "UCR", "-30,8931", "-63,25509", "Población: dato no oficial (Fundación COLSECOR); verificar en INDEC."],
+    ["Las Varillas", "Córdoba", "Pampeana", "18849", "Vecinal", "-31,87043", "-62,71967", ""],
+    ["Magdalena", "Buenos Aires", "Pampeana", "26613", "UCR", "-35,08266", "-57,51145", ""],
+    ["Malagueño", "Córdoba", "Pampeana", "25918", "Vecinal", "-31,46736", "-64,35901", ""],
+    ["Mendiolaza", "Córdoba", "Pampeana", "14718", "PRO", "-31,2652", "-64,30376", "Hubo pedido de revocatoria en 2025; resultado no confirmado."],
+    ["Neuquén", "Neuquén", "Patagonia", "289527", "MPN", "-38,95131", "-68,05914", "En 2024 creó el partido Primero Neuquén."],
+    ["Paraná", "Entre Ríos", "Pampeana", "271304", "PJ", "-31,74015", "-60,52747", ""],
+    ["Pergamino", "Buenos Aires", "Pampeana", "115340", "PRO", "-33,89328", "-60,56451", "En 2025 se sumó al frente HECHOS."],
+    ["Puerto Madryn", "Chubut", "Patagonia", "102505", "PJ", "-42,76726", "-65,03663", "Aliado al gobernador Torres (Despierta Chubut)."],
+    ["Rada Tilly", "Chubut", "Patagonia", "13494", "UCR", "-45,92389", "-67,5574", ""],
+    ["Río Grande", "Tierra del Fuego", "Patagonia", "98794", "PJ", "-53,78635", "-67,69613", "En 2024-2025 fundó el partido provincial Provincia Grande."],
+    ["Río Primero", "Córdoba", "Pampeana", "11726", "Juntos por el Cambio", "-31,33383", "-63,61855", "Partido de la intendenta a confirmar (UCR o PRO)."],
+    ["Salta", "Salta", "NOA", "594772", "Unidos por Salta", "-24,7831", "-65,41104", ""],
+    ["San Juan", "San Juan", "Cuyo", "115390", "Producción y Trabajo", "-31,5372", "-68,52502", "Electa por el frente Unidos por San Juan."],
+    ["San Salvador de Jujuy", "Jujuy", "NOA", "312446", "UCR", "-24,18581", "-65,29908", "En \"Ciudades en proceso\" figura como \"Jujuy\"."],
+    ["Tigre", "Buenos Aires", "GBA", "446949", "PJ", "-34,42569", "-58,58105", "En 2025 compitió con Somos Buenos Aires."],
+    ["Trenque Lauquen", "Buenos Aires", "Pampeana", "49499", "UCR", "-35,97326", "-62,73264", "En 2025 compitió con Somos Buenos Aires."],
+    ["Tunuyán", "Mendoza", "Cuyo", "60171", "PJ", "-33,57755", "-69,02538", ""],
+    ["Viedma", "Río Negro", "Patagonia", "60903", "Juntos Somos Río Negro", "-40,8083", "-62,99467", ""]
   ]
 };
 
@@ -2150,6 +2281,22 @@ const MAPA_AR = {"proj": {"minx": -73.568399, "maxy": -21.786938, "k": 0.7880107
     return m;
   }
 
+  // Pestaña "Ciudades en proceso": Reconocimiento | Ciudad | Provincia | Estado | Año estimado de entrega
+  function procesarProceso(rows) {
+    const hi = rows.findIndex((r) => r.some((c) => norm(c) === "reconocimiento"));
+    if (hi < 0) throw new Error("Sin columna Reconocimiento en Ciudades en proceso");
+    const h = rows[hi].map(norm), ix = (f) => h.findIndex(f);
+    const iR = ix((c) => c === "reconocimiento"), iC = ix((c) => c === "ciudad"), iP = ix((c) => c.includes("provincia")),
+      iE = ix((c) => c === "estado"), iA = ix((c) => c.startsWith("ano") || c.includes("entrega"));
+    return rows.slice(hi + 1).map((r) => {
+      const ciudad = String(r[iC] ?? "").replace(/\s+/g, " ").trim(), nombre = String(r[iR] ?? "").replace(/\s+/g, " ").trim();
+      if (!ciudad || !nombre) return null;
+      const e = norm(r[iE]);
+      return { ciudad, provincia: String(r[iP] ?? "").trim(), nombreRaw: nombre, est: e.includes("evalu") ? "eval" : "pot",
+        estLabel: String(r[iE] ?? "").trim(), tipo: norm(nombre).includes("certificacion") ? "cert" : "sello", anio: anioDe(r[iA]) };
+    }).filter(Boolean);
+  }
+
   function procesarSellos(rows) {
     const hi = rows.findIndex((r) => r.some((c) => norm(c).includes("sello")));
     if (hi < 0) throw new Error("Sin columna de sello en Mapa sellos");
@@ -2169,6 +2316,7 @@ const MAPA_AR = {"proj": {"minx": -73.568399, "maxy": -21.786938, "k": 0.7880107
   }
 
   function setSellos(rows) { estado.sellos = procesarSellos(rows); armarReconocimientos(); }
+  function setProceso(rows) { estado.procRaw = procesarProceso(rows); armarReconocimientos(); }
   function setMaestra(rows) { estado.maestra = procesarMaestra(rows); armarReconocimientos(); }
 
   // Une certificaciones + sellos por ciudad, usando la pestaña "Ciudades" como lista oficial
@@ -2192,9 +2340,15 @@ const MAPA_AR = {"proj": {"minx": -73.568399, "maxy": -21.786938, "k": 0.7880107
       const f = ficha(s.ciudad, s);
       recs.push({ key: f.key, tipo: "sello", nombre: s.sello, anio: s.anio, puntaje: s.puntaje });
     });
+    // Ciudades en proceso (en evaluación / potenciales): no suman a los reconocimientos
+    const conocidos = [...new Set(estado.sellos.map((s) => s.sello))];
+    const proc = (estado.procRaw || []).map((p) => {
+      const f = ficha(p.ciudad, p);
+      return { ...p, key: f.key, nombre: p.tipo === "sello" ? selloCanon(p.nombreRaw, conocidos) : p.nombreRaw };
+    });
     const fichas = new Map();
-    recs.forEach((r) => { if (!fichas.has(r.key)) fichas.set(r.key, M.get(r.key) ? { key: r.key, ...M.get(r.key), enMaestra: true } : sinFicha.get(r.key)); });
-    estado.recs = recs; estado.fichas = fichas; estado.sinFicha = [...sinFicha.values()];
+    recs.concat(proc).forEach((r) => { if (!fichas.has(r.key)) fichas.set(r.key, M.get(r.key) ? { key: r.key, ...M.get(r.key), enMaestra: true } : sinFicha.get(r.key)); });
+    estado.recs = recs; estado.proc = proc; estado.fichas = fichas; estado.sinFicha = [...sinFicha.values()];
   }
 
   /* ---------- resúmenes ---------- */
@@ -2376,6 +2530,7 @@ const MAPA_AR = {"proj": {"minx": -73.568399, "maxy": -21.786938, "k": 0.7880107
   /* ---------- MAPA ---------- */
   function recsMapaFiltrados() {
     const f = estado.fm, q = norm(f.q);
+    if (!f.est.rec) return [];
     return (estado.recs || []).filter((r) => {
       const c = estado.fichas.get(r.key);
       if (q && !norm(c.ciudad).includes(q)) return false;
@@ -2389,6 +2544,24 @@ const MAPA_AR = {"proj": {"minx": -73.568399, "maxy": -21.786938, "k": 0.7880107
       return true;
     });
   }
+  function procMapaFiltrados() {
+    const f = estado.fm, q = norm(f.q);
+    return (estado.proc || []).filter((p) => {
+      if (!f.est[p.est]) return false;
+      const c = estado.fichas.get(p.key);
+      if (q && !norm(c.ciudad).includes(q)) return false;
+      if (f.prov && provKey(c.provincia) !== provKey(f.prov)) return false;
+      if (f.region && c.region !== f.region) return false;
+      if (f.partido && c.partido !== f.partido) return false;
+      if (f.tam && c.tam !== f.tam) return false;
+      if (f.anio && p.anio !== +f.anio) return false;
+      if (f.tipo && p.tipo !== f.tipo) return false;
+      if (f.sello && !(p.tipo === "sello" && p.nombre === f.sello)) return false;
+      return true;
+    });
+  }
+  const agrupar = (arr) => { const m = new Map(); arr.forEach((r) => { if (!m.has(r.key)) m.set(r.key, []); m.get(r.key).push(r); }); return m; };
+  const chipProc = (p) => `<span class="rchip proc ${p.est}">${svg(p.est === "eval" ? "reloj" : "calendario")}${esc(p.nombre)} <span class="yr">${esc(ESTADOS_PROCESO[p.est].label)}${p.anio ? " · " + p.anio : ""}</span></span>`;
   function opciones(sel, valores, actual, todos) {
     sel.innerHTML = `<option value="">${todos}</option>` + valores.map(([v, t]) => `<option value="${esc(v)}"${String(actual) === String(v) ? " selected" : ""}>${esc(t)}</option>`).join("");
     sel.classList.toggle("on", actual !== "" && actual != null);
@@ -2399,10 +2572,12 @@ const MAPA_AR = {"proj": {"minx": -73.568399, "maxy": -21.786938, "k": 0.7880107
     opciones($("#mf-prov"), uniq(F.map((c) => c.provincia)).sort((a, b) => a.localeCompare(b, "es")).map((p) => [p, p]), f.prov, "Todas");
     opciones($("#mf-region"), REGIONES.filter((r) => F.some((c) => c.region === r)).concat(uniq(F.map((c) => c.region)).filter((r) => !REGIONES.includes(r))).map((r) => [r, r]), f.region, "Todas");
     opciones($("#mf-partido"), uniq(F.map((c) => c.partido)).sort((a, b) => (a === "Sin dato") - (b === "Sin dato") || a.localeCompare(b, "es")).map((p) => [p, p]), f.partido, "Todos");
-    opciones($("#mf-anio"), uniq(recs.map((r) => r.anio)).sort().map((y) => [y, y]), f.anio, "Todos");
+    opciones($("#mf-anio"), uniq(recs.map((r) => r.anio).concat((estado.proc || []).map((p) => p.anio))).sort().map((y) => [y, y]), f.anio, "Todos");
     opciones($("#mf-tam"), TAMANIOS.filter((t) => F.some((c) => c.tam === t.k)).map((t) => [t.k, t.label]), f.tam, "Todos");
     opciones($("#mf-sello"), statsSellos().lista.map((s) => [s.nombre, s.nombre]), f.sello, "Todas");
     $('[data-render="mfColor"]').innerHTML = Object.entries(MAPA_COLOREAR).map(([k, m]) => `<button class="fbtn" data-mf-color="${k}" aria-pressed="${(f.color || "cant") === k}">${esc(m.boton)}</button>`).join("");
+    $('[data-render="mfEst"]').innerHTML = [["rec", "Reconocidas", "var(--c-mapa)"], ["eval", ESTADOS_PROCESO.eval.plural, "var(--c-eval-ink)"], ["pot", ESTADOS_PROCESO.pot.plural, "var(--c-pot)"]]
+      .map(([k, t, c]) => `<button class="fbtn" data-mf-est="${k}" aria-pressed="${!!f.est[k]}" style="--c:${c}">${t}</button>`).join("");
     const tipos = [["", "Todos"], ["cert", "Certificación"], ["sello", "Sellos temáticos"]];
     $('[data-render="mfTipo"]').innerHTML = tipos.map(([v, t]) => `<button class="fbtn" data-mf-tipo="${v}" aria-pressed="${(f.tipo || "") === v}"${v === "cert" ? ' style="--c:var(--c-cert)"' : v === "sello" ? ' style="--c:var(--c-sel)"' : ""}>${t}</button>`).join("");
   }
@@ -2444,7 +2619,7 @@ const MAPA_AR = {"proj": {"minx": -73.568399, "maxy": -21.786938, "k": 0.7880107
   const proj = (lon, lat) => { const P = MAPA_AR.proj; return [(lon - P.minx) * P.k * P.sx, (P.maxy - lat) * P.sx]; };
   const simbolo = (x, y, r, tipo, extra) => { x = +x; y = +y; r = +r; const f = (n) => +n.toFixed(2); return tipo === "cert"
     ? `<path class="pt cert" d="M${f(x)} ${f(y - r * 1.25)}L${f(x + r * 1.25)} ${f(y)}L${f(x)} ${f(y + r * 1.25)}L${f(x - r * 1.25)} ${f(y)}Z" ${extra}/>`
-    : `<circle class="pt sello" cx="${f(x)}" cy="${f(y)}" r="${f(r)}" ${extra}/>`; };
+    : `<circle class="pt ${tipo}" cx="${f(x)}" cy="${f(y)}" r="${f(r)}" ${extra}/>`; };
 
   function renderMapa(recs) {
     const porCiudad = new Map();
@@ -2459,17 +2634,25 @@ const MAPA_AR = {"proj": {"minx": -73.568399, "maxy": -21.786938, "k": 0.7880107
       const detalle = o.N ? `. ${txtCob(o)}; ${pct1(o.pobPct)} de su población` : "";
       return `<path id="mp${i}" class="prov${sel ? " sel" : ""}" d="${d}" fill="${colorProv(valorCob(o, modo), modo)}" data-mprov="${esc(nombre)}" tabindex="0" role="button" aria-label="${esc(nombre)}: ${n} ${n === 1 ? "ciudad reconocida" : "ciudades reconocidas"}${detalle}. Filtrar por esta provincia"></path>`;
     }).join("");
+    // Ciudades solo en proceso (sin reconocimiento con los filtros actuales): anillo (en evaluación) o anillo punteado (potencial)
+    const porProc = agrupar(procMapaFiltrados());
+    const orden = { pot: 0, eval: 1, sello: 2, cert: 3 };
     const pts = [...porCiudad.entries()].map(([k, rs]) => ({ c: estado.fichas.get(k), rs, tipo: rs.some((r) => r.tipo === "cert") ? "cert" : "sello" }))
+      .concat([...porProc.entries()].filter(([k]) => !porCiudad.has(k)).map(([k, ps]) => ({ c: estado.fichas.get(k), rs: [], ps, tipo: ps.some((p) => p.est === "eval") ? "eval" : "pot" })))
       .filter((p) => p.c.lat != null && p.c.lon != null)
-      .sort((a, b) => (a.tipo === "cert") - (b.tipo === "cert") || b.rs.length - a.rs.length);
+      .sort((a, b) => orden[a.tipo] - orden[b.tipo] || b.rs.length - a.rs.length);
     const rad = (n) => Math.min(8.5, 3.6 + (n - 1) * 1.1);
-    const ptAttrs = (p) => `data-mcity="${esc(p.c.key)}" tabindex="0" role="button" aria-label="${esc(p.c.ciudad)}, ${esc(p.c.provincia)}: ${p.rs.length} ${p.rs.length === 1 ? "reconocimiento" : "reconocimientos"}"`;
-    const main = pts.map((p) => { const [x, y] = proj(p.c.lon, p.c.lat); return simbolo(x.toFixed(1), y.toFixed(1), rad(p.rs.length), p.tipo, ptAttrs(p)); }).join("");
+    const radP = (p) => (p.rs.length ? rad(p.rs.length) : p.tipo === "eval" ? 4.2 : 4);
+    const ptAttrs = (p) => `data-mcity="${esc(p.c.key)}" tabindex="0" role="button" aria-label="${esc(p.c.ciudad)}, ${esc(p.c.provincia)}: ${p.rs.length
+      ? `${p.rs.length} ${p.rs.length === 1 ? "reconocimiento" : "reconocimientos"}`
+      : `${p.ps.length} ${p.ps.length === 1 ? "reconocimiento" : "reconocimientos"} ${p.tipo === "eval" ? "en evaluación" : "potenciales"}`}"`;
+    const main = pts.map((p) => { const [x, y] = proj(p.c.lon, p.c.lat); return simbolo(x.toFixed(1), y.toFixed(1), radP(p), p.tipo, ptAttrs(p)); }).join("");
     // Recuadro AMBA
     const A = MAPA_AR.amba, [ax0, ay0] = proj(A.lon0, A.lat0), [ax1, ay1] = proj(A.lon1, A.lat1);
     const aw = ax1 - ax0, ah = ay1 - ay0, IW = 150, IH = Math.round(IW * ah / aw), IX = 240, IY = 590, z = IW / aw;
     const enAmba = pts.filter((p) => p.c.lon >= A.lon0 && p.c.lon <= A.lon1 && p.c.lat <= A.lat0 && p.c.lat >= A.lat1);
-    const inset = enAmba.map((p) => { const [x, y] = proj(p.c.lon, p.c.lat); return simbolo(x.toFixed(2), y.toFixed(2), (rad(p.rs.length) * 1.15 / z).toFixed(2), p.tipo, ptAttrs(p) + ' style="stroke-width:' + (1.2 / z).toFixed(3) + '"'); }).join("");
+    const inset = enAmba.map((p) => { const [x, y] = proj(p.c.lon, p.c.lat); const sw = p.tipo === "eval" || p.tipo === "pot" ? 1.8 : 1.2;
+      return simbolo(x.toFixed(2), y.toFixed(2), (radP(p) * 1.15 / z).toFixed(2), p.tipo, ptAttrs(p) + ' style="stroke-width:' + (sw / z).toFixed(3) + (p.tipo === "pot" ? ';stroke-dasharray:' + (2 / z).toFixed(3) + ' ' + (1.4 / z).toFixed(3) : "") + '"'); }).join("");
     $('[data-render="mapaSvg"]').innerHTML = `<svg class="mapa-main" viewBox="0 0 ${P.w} ${P.h}" role="group" aria-label="Mapa de Argentina con las ciudades reconocidas">
       <g>${paths}</g>
       <rect class="inset-mark" x="${ax0.toFixed(1)}" y="${ay0.toFixed(1)}" width="${aw.toFixed(1)}" height="${ah.toFixed(1)}"/>
@@ -2486,30 +2669,34 @@ const MAPA_AR = {"proj": {"minx": -73.568399, "maxy": -21.786938, "k": 0.7880107
     $('[data-render="mapaLeyenda"]').innerHTML =
       `<span class="lg"><svg viewBox="0 0 14 14"><path d="M7 1L13 7L7 13L1 7Z" fill="var(--c-cert)"/></svg>Con Certificación (y puede tener sellos)</span>
        <span class="lg"><svg viewBox="0 0 14 14"><circle cx="7" cy="7" r="5.5" fill="var(--c-sel)"/></svg>Solo sellos</span>
+       ${estado.fm.est.eval ? `<span class="lg"><svg viewBox="0 0 14 14"><circle cx="7" cy="7" r="5" fill="#fff" stroke="var(--c-eval)" stroke-width="2.4"/></svg>Solo en evaluación</span>` : ""}
+       ${estado.fm.est.pot ? `<span class="lg"><svg viewBox="0 0 14 14"><circle cx="7" cy="7" r="5" fill="#fff" stroke="var(--gray)" stroke-width="1.8" stroke-dasharray="2.2 1.6"/></svg>Solo potencial</span>` : ""}
        <span class="lg">Tamaño del símbolo: cantidad de reconocimientos</span>
        <span class="lg-t">${esc(MAPA_COLOREAR[modo].titulo)}</span>
        ${MAPA_COLOREAR[modo].pasos.map(([, t], i) => `<span class="lg"><i class="sw" style="background:${MAPA_COLORES[i]}"></i>${esc(t)}</span>`).join("")}
        ${modo === "cant" ? "" : `<p class="m-nota">Cuentan las ciudades reconocidas de 10.000 habitantes o más, sobre los gobiernos locales de esa escala en la provincia (Censo 2022, INDEC). La Ciudad de Buenos Aires cuenta como un gobierno local.</p>`}`;
-    const sinPunto = [...porCiudad.keys()].map((k) => estado.fichas.get(k)).filter((c) => c.lat == null || c.lon == null);
+    const sinPunto = [...new Set([...porCiudad.keys(), ...porProc.keys()])].map((k) => estado.fichas.get(k)).filter((c) => c.lat == null || c.lon == null);
     const av = $('[data-render="mapaAviso"]');
     av.hidden = !sinPunto.length;
     av.textContent = sinPunto.length ? `Sin ubicación en el mapa (no figuran en la pestaña "Ciudades" o no tienen coordenadas): ${sinPunto.map((c) => c.ciudad).join(", ")}.` : "";
   }
 
+  // Barras apiladas: certificación · sellos · en proceso (aún no entregados, gris)
   function barras(items, max) {
-    return items.map((it) => `<div class="hb"><span class="n${it.c + it.s ? "" : " zero"}">${esc(it.label)}</span>
-      <span class="tr" role="img" aria-label="${esc(it.label)}: ${it.c} certificaciones y ${it.s} sellos">${it.c ? `<span class="c" style="width:${(it.c / max) * 100}%"></span>` : ""}${it.s ? `<span class="s" style="width:${(it.s / max) * 100}%"></span>` : ""}</span>
-      <span class="v">${it.c + it.s}</span></div>`).join("");
+    return items.map((it) => { const p = it.p || 0; return `<div class="hb"><span class="n${it.c + it.s + p ? "" : " zero"}">${esc(it.label)}</span>
+      <span class="tr" role="img" aria-label="${esc(it.label)}: ${it.c} certificaciones y ${it.s} sellos${p ? `; ${p} en proceso (aún no entregados)` : ""}">${it.c ? `<span class="c" style="width:${(it.c / max) * 100}%"></span>` : ""}${it.s ? `<span class="s" style="width:${(it.s / max) * 100}%"></span>` : ""}${p ? `<span class="p" style="width:${(p / max) * 100}%"></span>` : ""}</span>
+      <span class="v">${it.c + it.s || (p ? "" : 0)}${p ? `<small>${it.c + it.s ? "+" : ""}${p}</small>` : ""}</span></div>`; }).join("");
   }
-  function renderGraficos(recs) {
-    const cuenta = (pred) => ({ c: recs.filter((r) => r.tipo === "cert" && pred(r)).length, s: recs.filter((r) => r.tipo === "sello" && pred(r)).length });
-    const anios = [...new Set((estado.recs || []).map((r) => r.anio).filter(Boolean))].sort();
+  function renderGraficos(recs, procs) {
+    procs = procs || [];
+    const cuenta = (pred) => ({ c: recs.filter((r) => r.tipo === "cert" && pred(r)).length, s: recs.filter((r) => r.tipo === "sello" && pred(r)).length, p: procs.filter(pred).length });
+    const anios = [...new Set((estado.recs || []).map((r) => r.anio).concat(procs.map((p) => p.anio)).filter(Boolean))].sort();
     const A = anios.map((y) => ({ label: String(y), ...cuenta((r) => r.anio === y) }));
     const F = (r) => estado.fichas.get(r.key);
     const regs = REGIONES.concat([...new Set([...estado.fichas.values()].map((c) => c.region))].filter((r) => !REGIONES.includes(r)));
     const R = regs.map((g) => ({ label: g, ...cuenta((r) => F(r).region === g) }));
     const T = TAMANIOS.map((t) => ({ label: t.label.replace(" hab.", ""), ...cuenta((r) => F(r).tam === t.k) }));
-    const mx = (arr) => Math.max(1, ...arr.map((i) => i.c + i.s));
+    const mx = (arr) => Math.max(1, ...arr.map((i) => i.c + i.s + (i.p || 0)));
     $('[data-render="chAnio"]').innerHTML = barras(A, mx(A));
     $('[data-render="chRegion"]').innerHTML = barras(R, mx(R));
     $('[data-render="chTam"]').innerHTML = barras(T, mx(T));
@@ -2517,18 +2704,23 @@ const MAPA_AR = {"proj": {"minx": -73.568399, "maxy": -21.786938, "k": 0.7880107
 
   function renderCobertura() {
     const modo = estado.fm.color || "cant", cob = estado.cob;
-    const filas = [...cob.entries()].filter(([, o]) => o.n > 0).map(([pk, o]) => ({ nombre: (CENSO.prov.get(pk) || {}).nombre || pk, o }))
-      .sort((a, b) => valorCob(b.o, modo) - valorCob(a.o, modo) || b.o.n - a.o.n || a.nombre.localeCompare(b.nombre, "es"));
-    const max = modo === "cant" ? Math.max(1, ...filas.map((f) => f.o.n)) : Math.max(1, ...filas.map((f) => valorCob(f.o, modo)));
+    // Ciudades solo en proceso por provincia (se suman en gris en el modo Cantidad)
+    const pp = new Map();
+    (estado.procSolo || new Map()).forEach((ps, k) => { const pk = provKey(estado.fichas.get(k).provincia); pp.set(pk, (pp.get(pk) || 0) + 1); });
+    const pend = (pk) => (modo === "cant" ? pp.get(pk) || 0 : 0);
+    const filas = [...new Set([...cob.keys(), ...pp.keys()])].map((pk) => ({ pk, nombre: (CENSO.prov.get(pk) || {}).nombre || pk, o: cob.get(pk) || { n: 0, n10: 0, N: 0, gl: 0, pobPct: 0 } }))
+      .filter((f) => f.o.n > 0 || pend(f.pk) > 0)
+      .sort((a, b) => valorCob(b.o, modo) + pend(b.pk) - valorCob(a.o, modo) - pend(a.pk) || b.o.n - a.o.n || a.nombre.localeCompare(b.nombre, "es"));
+    const max = modo === "cant" ? Math.max(1, ...filas.map((f) => f.o.n + pend(f.pk))) : Math.max(1, ...filas.map((f) => valorCob(f.o, modo)));
     $('[data-render="chCobT"]').textContent = modo === "cant" ? "Ciudades por provincia" : modo === "gl" ? "Cobertura de gobiernos locales" : "Cobertura de población";
-    $('[data-render="chCob"]').innerHTML = filas.length ? filas.map(({ nombre, o }) => {
-      const v = valorCob(o, modo);
-      const val = modo === "cant" ? `${o.n}` : modo === "gl" ? `${pct1(o.gl)} <small>${o.n10}/${o.N}</small>` : pct1(o.pobPct);
-      const aria = modo === "cant" ? `${o.n} ${o.n === 1 ? "ciudad reconocida" : "ciudades reconocidas"}` : modo === "gl" ? txtCob(o) : `${pct1(o.pobPct)} de la población de sus gobiernos locales de 10.000 hab. o más`;
-      return `<div class="hb cob"><span class="n">${esc(nombre)}</span><span class="tr" role="img" aria-label="${esc(nombre)}: ${esc(aria)}"><span class="c" style="width:${(v / max) * 100}%"></span></span><span class="v">${val}</span></div>`;
-    }).join("") : `<div class="empty" style="padding:8px 0">Sin ciudades con estos filtros.</div>`;
+    $('[data-render="chCob"]').innerHTML = filas.length ? filas.map(({ pk, nombre, o }) => {
+      const v = valorCob(o, modo), p = pend(pk);
+      const val = modo === "cant" ? `${o.n || (p ? "" : 0)}${p ? `<small>${o.n ? "+" : ""}${p}</small>` : ""}` : modo === "gl" ? `${pct1(o.gl)} <small>${o.n10}/${o.N}</small>` : pct1(o.pobPct);
+      const aria = modo === "cant" ? `${o.n} ${o.n === 1 ? "ciudad reconocida" : "ciudades reconocidas"}${p ? ` y ${p} en proceso` : ""}` : modo === "gl" ? txtCob(o) : `${pct1(o.pobPct)} de la población de sus gobiernos locales de 10.000 hab. o más`;
+      return `<div class="hb cob"><span class="n">${esc(nombre)}</span><span class="tr" role="img" aria-label="${esc(nombre)}: ${esc(aria)}">${v ? `<span class="c" style="width:${(v / max) * 100}%"></span>` : ""}${p ? `<span class="p" style="width:${(p / max) * 100}%"></span>` : ""}</span><span class="v">${val}</span></div>`;
+    }).join("") : `<div class="empty" style="padding:8px 0">${modo === "cant" ? "Sin ciudades con estos filtros." : "Sin ciudades reconocidas con estos filtros: los porcentajes solo consideran reconocimientos ya entregados."}</div>`;
     const fuera = [...new Set(recsMapaFiltrados().map((r) => r.key))].map((k) => estado.fichas.get(k)).filter((c) => poblacionCiudad(c) == null);
-    $('[data-render="chCobNota"]').textContent = modo === "cant" ? "Cada ciudad cuenta una vez, aunque tenga más de un reconocimiento."
+    $('[data-render="chCobNota"]').textContent = modo === "cant" ? `Cada ciudad cuenta una vez, aunque tenga más de un reconocimiento.${pp.size ? " En gris, las ciudades que solo están en proceso." : ""}`
       : `Denominador: gobiernos locales de 10.000 hab. o más (Censo 2022).${fuera.length ? ` No suman al porcentaje por tener menos de 10.000 hab. o no tener población cargada: ${fuera.map((c) => c.ciudad).join(", ")}.` : ""}`;
   }
 
@@ -2552,19 +2744,26 @@ const MAPA_AR = {"proj": {"minx": -73.568399, "maxy": -21.786938, "k": 0.7880107
     recs.forEach((r) => { if (!ciudades.has(r.key)) ciudades.set(r.key, []); ciudades.get(r.key).push(r); });
     const provs = new Set([...ciudades.keys()].map((k) => provKey(estado.fichas.get(k).provincia)));
     const masDeUno = [...ciudades.values()].filter((rs) => rs.length > 1).length;
+    const procs = procMapaFiltrados(), porProc = agrupar(procs);
+    const cEst = (e) => new Set(procs.filter((p) => p.est === e).map((p) => p.key)).size, nEst = (e) => procs.filter((p) => p.est === e).length;
     $('[data-render="mKpis"]').innerHTML = [
       [ciudades.size, "Ciudades reconocidas", "Cada ciudad cuenta una vez"],
       [recs.length, "Reconocimientos", `${recs.filter((r) => r.tipo === "cert").length} certificaciones · ${recs.filter((r) => r.tipo === "sello").length} sellos`],
-      [provs.size, "Provincias", "Con al menos una ciudad"],
-      [masDeUno, "Con más de un reconocimiento", "Ciudades"]
-    ].map(([v, l, s]) => `<div class="card accent kpi"><div class="v">${v}</div><div class="l">${l}</div><div class="s">${s}</div></div>`).join("");
-    const filtrando = f.q || f.prov || f.region || f.partido || f.anio || f.tam || f.tipo || f.sello;
+      [provs.size, "Provincias", "Con al menos una ciudad reconocida"],
+      [masDeUno, "Con más de un reconocimiento", "Ciudades"],
+      [cEst("eval"), ESTADOS_PROCESO.eval.kpi, `${nEst("eval")} ${nEst("eval") === 1 ? "reconocimiento en curso" : "reconocimientos en curso"}`, "eval"],
+      [cEst("pot"), ESTADOS_PROCESO.pot.kpi, `${nEst("pot")} ${nEst("pot") === 1 ? "reconocimiento posible" : "reconocimientos posibles"}`, "pot"]
+    ].map(([v, l, s, c]) => `<div class="card accent kpi ${c || "rec"}"><div class="v">${v}</div><div class="l">${l}</div><div class="s">${s}</div></div>`).join("");
+    const filtrando = f.q || f.prov || f.region || f.partido || f.anio || f.tam || f.tipo || f.sello || !f.est.rec || !f.est.eval || !f.est.pot;
     const tot = new Set((estado.recs || []).map((r) => r.key)).size;
-    bindAll("mResultados", filtrando ? `Mostrando ${ciudades.size} de ${tot} ciudades y ${recs.length} reconocimientos` : `Mostrando las ${tot} ciudades reconocidas`);
+    const soloProc = [...porProc.keys()].filter((k) => !ciudades.has(k));
+    bindAll("mResultados", (filtrando ? `Mostrando ${ciudades.size} de ${tot} ciudades reconocidas y ${recs.length} reconocimientos` : `Mostrando las ${tot} ciudades reconocidas`)
+      + (soloProc.length ? ` · ${soloProc.length} ${soloProc.length === 1 ? "ciudad más en proceso" : "ciudades más en proceso"}` : ""));
     bindAll("mResultadosCorto", `(${ciudades.size})`);
     $("#m-limpiar").hidden = !filtrando;
     renderMapa(recs);
-    renderGraficos(recs);
+    renderGraficos(recs, procs);
+    estado.procSolo = agrupar(procs.filter((p) => !ciudades.has(p.key)));
     renderCobertura();
     const lista = [...ciudades.entries()].map(([k, rs]) => ({ c: estado.fichas.get(k), rs, todos: estado.recs.filter((r) => r.key === k) }))
       .sort((a, b) => b.rs.length - a.rs.length || a.c.ciudad.localeCompare(b.c.ciudad, "es"));
@@ -2575,15 +2774,28 @@ const MAPA_AR = {"proj": {"minx": -73.568399, "maxy": -21.786938, "k": 0.7880107
         <div class="tot"><b>${rs.length}</b><span>${rs.length === 1 ? "Reconocimiento" : "Reconocimientos"}</span></div></div>
         <div class="rchips">${ord.map((r) => r.tipo === "cert"
           ? `<span class="rchip cert">${svg("check")}${esc(r.nombre)} <span class="yr">${r.anio || ""}</span></span>`
-          : `<span class="rchip sello">${svg("medalla")}${esc(r.nombre)} <span class="yr">${r.anio || ""}</span></span>`).join("")}</div>
+          : `<span class="rchip sello">${svg("medalla")}${esc(r.nombre)} <span class="yr">${r.anio || ""}</span></span>`).join("")}${(porProc.get(c.key) || []).map(chipProc).join("")}</div>
       </article>`;
-    }).join("") : `<div class="empty">No hay ciudades con esos filtros. <button class="linkbtn" data-m-limpiar>Limpiar filtros</button></div>`;
+    }).join("") : (soloProc.length ? "" : `<div class="empty">No hay ciudades con esos filtros. <button class="linkbtn" data-m-limpiar>Limpiar filtros</button></div>`);
+    // Ciudades que todavía no tienen reconocimientos (solo en proceso)
+    const listaP = soloProc.map((k) => ({ c: estado.fichas.get(k), ps: porProc.get(k) }))
+      .sort((a, b) => (a.ps.some((p) => p.est === "eval") ? 0 : 1) - (b.ps.some((p) => p.est === "eval") ? 0 : 1) || a.c.ciudad.localeCompare(b.c.ciudad, "es"));
+    const tP = $('[data-render="mProcT"]');
+    tP.hidden = !listaP.length;
+    tP.innerHTML = `Ciudades en proceso <span style="color:var(--dgray);font-weight:700;font-size:15px">(${listaP.length}) · todavía sin reconocimientos</span>`;
+    $('[data-render="mProc"]').innerHTML = listaP.map(({ c, ps }) => `<article class="card mcity proc">
+        <div class="row1"><div><h3>${esc(c.ciudad)}</h3><div class="prov">${svg("pin", 'width="13" height="13" style="vertical-align:-2px"')} ${esc(c.provincia)}${c.region && c.region !== "Sin dato" ? " · " + esc(c.region) : ""}${c.pob != null ? " · " + esc(fmtPob(c.pob)) : ""}</div></div>
+        <div class="tot"><b>${ps.length}</b><span>En proceso</span></div></div>
+        <div class="rchips">${[...ps].sort((a, b) => (a.est === "eval" ? 0 : 1) - (b.est === "eval" ? 0 : 1) || (a.anio || 0) - (b.anio || 0)).map(chipProc).join("")}</div>
+      </article>`).join("");
   }
 
   function mostrarTip(el, ev) {
     const tip = $("#m-tip"), k = el.dataset.mcity, c = estado.fichas.get(k);
-    const rs = recsMapaFiltrados().filter((r) => r.key === k);
-    tip.innerHTML = `<b>${esc(c.ciudad)}</b>${esc(c.provincia)}${c.pob != null ? " · " + esc(fmtPob(c.pob)) : ""}<ul>${rs.map((r) => `<li>${esc(r.nombre)} (${r.anio || "s/f"})</li>`).join("")}</ul>`;
+    const rs = recsMapaFiltrados().filter((r) => r.key === k), ps = procMapaFiltrados().filter((p) => p.key === k);
+    tip.innerHTML = `<b>${esc(c.ciudad)}</b>${esc(c.provincia)}${c.pob != null ? " · " + esc(fmtPob(c.pob)) : ""}`
+      + (rs.length ? `<ul>${rs.map((r) => `<li>${esc(r.nombre)} (${r.anio || "s/f"})</li>`).join("")}</ul>` : "")
+      + (ps.length ? `<div class="tp-h">En proceso</div><ul>${ps.map((p) => `<li>${esc(p.nombre)} · ${esc(ESTADOS_PROCESO[p.est].label)}${p.anio ? " " + p.anio : ""}</li>`).join("")}</ul>` : "");
     tip.hidden = false;
     const box = $("#m-map").getBoundingClientRect(), pb = el.getBoundingClientRect();
     let x = pb.left - box.left + pb.width / 2 + 12, y = pb.top - box.top - 10;
@@ -2684,7 +2896,7 @@ const MAPA_AR = {"proj": {"minx": -73.568399, "maxy": -21.786938, "k": 0.7880107
   }
 
   /* ---------- avisos de fuente de datos ---------- */
-  const RESPALDOS = () => ({ preguntas: RESPALDO_PREGUNTAS, ciudades: RESPALDO_CIUDADES, sellos: RESPALDO_SELLOS, maestra: RESPALDO_MAESTRA, icil: RESPALDO_ICIL });
+  const RESPALDOS = () => ({ preguntas: RESPALDO_PREGUNTAS, ciudades: RESPALDO_CIUDADES, sellos: RESPALDO_SELLOS, maestra: RESPALDO_MAESTRA, proceso: RESPALDO_PROCESO, icil: RESPALDO_ICIL });
   const cargando = new Set();
   function renderAvisos() {
     const R = RESPALDOS();
@@ -2697,7 +2909,7 @@ const MAPA_AR = {"proj": {"minx": -73.568399, "maxy": -21.786938, "k": 0.7880107
         el.hidden = false; el.className = "data-note"; el.innerHTML = `${svg("info")} Mostrando datos al ${fr}`; el.title = "No se pudo leer la planilla en línea; se muestra la copia de respaldo.";
       } else el.hidden = true;
     });
-    const B = { preguntas: "updPreguntas", ciudades: "updCiudades", sellos: "updSellos", maestra: "updMaestra", icil: "updIcil" };
+    const B = { preguntas: "updPreguntas", ciudades: "updCiudades", sellos: "updSellos", maestra: "updMaestra", proceso: "updProceso", icil: "updIcil" };
     Object.entries(B).forEach(([k, bind]) => {
       if (cargando.has(k) && !estado.cargadoEn[k]) bindAll(bind, "cargando…");
       else if (!cargando.has(k)) bindAll(bind, estado.fuente[k] === "vivo" ? `actualizados al ${fmtFechaHora(estado.cargadoEn[k])} (planilla en línea)` : `datos al ${fmtFecha(fechaISO(R[k].fecha))} (copia de respaldo)`);
@@ -2718,7 +2930,7 @@ const MAPA_AR = {"proj": {"minx": -73.568399, "maxy": -21.786938, "k": 0.7880107
     document.addEventListener("click", (ev) => {
       const up = ev.target.closest("[data-actualizar]");
       if (up) { actualizarDesdeBoton(up.dataset.actualizar); return; }
-      const t = ev.target.closest("[data-icil],[data-eje],[data-sello],[data-ir-sello],[data-prov],[data-nivel],[data-toggle],[data-ir-nivel],[data-limpiar],#limpiar,#overlay,#p-close,[data-sf-prov],[data-sf-anio],#s-limpiar,[data-s-limpiar],[data-mf-tipo],[data-mf-color],#m-limpiar,[data-m-limpiar],[data-mprov],[data-mcity]");
+      const t = ev.target.closest("[data-icil],[data-eje],[data-sello],[data-ir-sello],[data-prov],[data-nivel],[data-toggle],[data-ir-nivel],[data-limpiar],#limpiar,#overlay,#p-close,[data-sf-prov],[data-sf-anio],#s-limpiar,[data-s-limpiar],[data-mf-tipo],[data-mf-est],[data-mf-color],#m-limpiar,[data-m-limpiar],[data-mprov],[data-mcity]");
       if (!t) return;
       if ("icil" in t.dataset) abrirPanelIcil(t.dataset.icil);
       else if (t.dataset.eje) abrirPanel(t.dataset.eje);
@@ -2728,9 +2940,10 @@ const MAPA_AR = {"proj": {"minx": -73.568399, "maxy": -21.786938, "k": 0.7880107
       else if ("sfProv" in t.dataset) { estado.fs.prov = t.dataset.sfProv || null; renderSellosFiltros(); renderSellosCiudades(); }
       else if ("sfAnio" in t.dataset) { estado.fs.anio = t.dataset.sfAnio ? +t.dataset.sfAnio : null; renderSellosFiltros(); renderSellosCiudades(); }
       else if (t.id === "s-limpiar" || "sLimpiar" in t.dataset) { estado.fs = { ...estado.fs, q: "", prov: null, anio: null, sello: "" }; $("#sq-ciudad").value = ""; renderSellosFiltros(); renderSellosCiudades(); }
+      else if (t.dataset.mfEst) { const k = t.dataset.mfEst; estado.fm.est = { ...estado.fm.est, [k]: !estado.fm.est[k] }; renderMapaFiltros(); renderMapaTodo(); }
       else if (t.dataset.mfColor) { estado.fm.color = t.dataset.mfColor; renderMapaFiltros(); renderMapaTodo(); }
       else if ("mfTipo" in t.dataset) { estado.fm.tipo = t.dataset.mfTipo; if (t.dataset.mfTipo === "cert") estado.fm.sello = ""; renderMapaFiltros(); renderMapaTodo(); }
-      else if (t.id === "m-limpiar" || "mLimpiar" in t.dataset) { estado.fm = { q: "", prov: "", region: "", partido: "", anio: "", tam: "", tipo: "", sello: "", color: estado.fm.color }; $("#mq").value = ""; renderMapaFiltros(); renderMapaTodo(); }
+      else if (t.id === "m-limpiar" || "mLimpiar" in t.dataset) { estado.fm = { q: "", prov: "", region: "", partido: "", anio: "", tam: "", tipo: "", sello: "", color: estado.fm.color, est: { rec: true, eval: true, pot: true } }; $("#mq").value = ""; renderMapaFiltros(); renderMapaTodo(); }
       else if (t.dataset.mprov) { const p = t.dataset.mprov; estado.fm.prov = provKey(estado.fm.prov) === provKey(p) ? "" : ([...estado.fichas.values()].find((c) => provKey(c.provincia) === provKey(p)) || { provincia: p }).provincia; renderMapaFiltros(); renderMapaTodo(); }
       else if (t.dataset.mcity) { const c = estado.fichas.get(t.dataset.mcity); estado.fm.q = c.ciudad; $("#mq").value = c.ciudad; $("#m-tip").hidden = true; renderMapaFiltros(); renderMapaTodo(); }
       else if ("prov" in t.dataset) { estado.filtros.prov = t.dataset.prov || null; renderFiltros(); renderCiudades(); }
@@ -2820,6 +3033,11 @@ const MAPA_AR = {"proj": {"minx": -73.568399, "maxy": -21.786938, "k": 0.7880107
       if (!procesarSellos(rows).length) throw new Error("Planilla de sellos vacía");
       setSellos(rows);
     },
+    proceso: async () => {
+      const rows = await leerHoja(FUENTES.proceso.sheetId, FUENTES.proceso);
+      if (!procesarProceso(rows).length) throw new Error("Pestaña Ciudades en proceso vacía");
+      setProceso(rows);
+    },
     icil: async () => {
       const rows = await leerHoja(FUENTES.icil.sheetId, FUENTES.icil);
       if (procesarIcil(rows).length < 5) throw new Error("Índice sin preguntas");
@@ -2864,22 +3082,23 @@ const MAPA_AR = {"proj": {"minx": -73.568399, "maxy": -21.786938, "k": 0.7880107
 
   /* ---------- inicio ---------- */
   document.addEventListener("DOMContentLoaded", () => {
-    estado.fuente.sellos = "respaldo"; estado.fuente.maestra = "respaldo"; estado.fuente.icil = "respaldo";
+    estado.fuente.sellos = "respaldo"; estado.fuente.maestra = "respaldo"; estado.fuente.icil = "respaldo"; estado.fuente.proceso = "respaldo";
     estado.fs = { q: "", sello: "", prov: null, anio: null, orden: "nombre" };
-    estado.fm = { q: "", prov: "", region: "", partido: "", anio: "", tam: "", tipo: "", sello: "", color: "cant" };
+    estado.fm = { q: "", prov: "", region: "", partido: "", anio: "", tam: "", tipo: "", sello: "", color: "cant", est: { rec: true, eval: true, pot: true } };
     renderTextos(); renderTextosSellos(); prepararRecursos();
     setPreguntas(RESPALDO_PREGUNTAS.filas);   // primero se muestra el respaldo…
     setCiudades(RESPALDO_CIUDADES.filas);
     estado.sellos = procesarSellos(RESPALDO_SELLOS.filas);
+    estado.procRaw = procesarProceso(RESPALDO_PROCESO.filas);
     estado.maestra = procesarMaestra(RESPALDO_MAESTRA.filas);
     setIcil(RESPALDO_ICIL.filas);
     renderTodo(); eventos(); mostrarVista(); renderAvisos();
-    ["preguntas", "ciudades", "sellos", "maestra", "icil"].forEach(cargarUno);   // …y se reemplaza por los datos en vivo al llegar
-    Promise.all(["preguntas", "ciudades", "sellos", "maestra", "icil"].map((k) => enCurso[k])).then(() => { renderTodo(); renderAvisos(); });
+    ["preguntas", "ciudades", "sellos", "maestra", "proceso", "icil"].forEach(cargarUno);   // …y se reemplaza por los datos en vivo al llegar
+    Promise.all(["preguntas", "ciudades", "sellos", "maestra", "proceso", "icil"].map((k) => enCurso[k])).then(() => { renderTodo(); renderAvisos(); });
   });
 
   // Exponer funciones de lectura para pruebas
-  window.__tablero = { parseCSV, procesarIcil, procesarPestana, procesarCiudades, procesarSellos, procesarMaestra, estado };
+  window.__tablero = { parseCSV, procesarIcil, procesarProceso, procesarPestana, procesarCiudades, procesarSellos, procesarMaestra, estado };
 })();
 </script>
 
