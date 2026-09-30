@@ -802,6 +802,94 @@ body[data-sec="mapa"] { --acc: var(--c-mapa); }
   .tdc-sel { flex-wrap: nowrap; overflow-x: auto; padding-bottom: 6px; -webkit-overflow-scrolling: touch; }
   .tdc-sel .fbtn { flex: none; }
 }
+
+/* =========================================================
+   Mapa: población alcanzada y conclusiones
+   ========================================================= */
+.m-pob { display: grid; grid-template-columns: 1.4fr 1fr; gap: 10px 28px; align-items: center; margin-bottom: 14px; padding: 20px 24px; }
+.m-pob .pob-num b { display: block; font-family: var(--f-title); font-weight: 800; font-size: 52px; line-height: 1; color: var(--c-mapa); }
+.m-pob .pob-num span { display: block; font-family: var(--f-title); font-weight: 700; font-size: 18px; margin-top: 6px; }
+.m-pob .pob-det { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+.m-pob .pob-det b { display: block; font-family: var(--f-title); font-weight: 800; font-size: 30px; color: var(--c-mapa); line-height: 1.05; }
+.m-pob .pob-det span { font-size: 13px; color: var(--dgray); }
+.m-pob .pob-nota { grid-column: 1 / -1; font-size: 12px; color: var(--dgray); margin: 0; }
+.m-concl { margin-top: 18px; border-left: 4px solid var(--c-mapa); padding: 16px 20px; }
+.m-concl h3 { font-family: var(--f-title); font-weight: 800; font-size: 18px; margin-bottom: 8px; }
+.concl { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 10px 22px; }
+.concl li { display: flex; gap: 10px; font-size: 14px; line-height: 1.4; }
+.concl li svg { width: 20px; height: 20px; color: var(--c-mapa); flex: none; margin-top: 1px; }
+@media (max-width: 680px) {
+  .m-pob { grid-template-columns: 1fr; padding: 16px; }
+  .m-pob .pob-num b { font-size: 40px; }
+  .m-pob .pob-det b { font-size: 24px; }
+}
+
+/* =========================================================
+   Gestión interna (gris claro: uso del equipo)
+   ========================================================= */
+:root { --c-gi: #8A847C; --c-gi-ink: #5E5953; }
+body[data-sec="gestion"] { --acc: var(--c-gi); }
+.hnav a.hnav-gi { color: #A39C92; font-weight: 600; }
+.hnav a.hnav-gi[aria-current="page"] { color: #fff; }
+.foot-gi { font-size: 12px; color: #A39C92; text-decoration: none; border: 1px solid #CFC8BD; border-radius: var(--r); padding: 3px 9px; }
+.foot-gi:hover { color: var(--dgray); }
+.g-kpis { grid-template-columns: repeat(4, minmax(0, 1fr)); margin-bottom: 14px; }
+.g-kpis .gk { text-align: left; cursor: pointer; font: inherit; }
+.g-kpis .gk .v { font-family: var(--f-title); font-weight: 800; font-size: 34px; line-height: 1; }
+.g-kpis .gk .l { font-size: 13px; color: var(--dgray); margin-top: 4px; }
+.g-kpis .gk[aria-pressed="true"] { outline: 3px solid var(--acc); outline-offset: -1px; }
+.gk.venc { --acc: #B02029; } .gk.venc .v { color: #B02029; }
+.gk.pronto { --acc: var(--c-eval); } .gk.pronto .v { color: var(--c-eval-ink); }
+.gk.anio { --acc: #E0B400; } .gk.anio .v { color: var(--yellow-ink); }
+.gk.ok { --acc: var(--c-gi); } .gk.ok .v { color: var(--c-gi-ink); }
+.gv-mes { margin-top: 14px; }
+.gv-mes-t { display: flex; align-items: baseline; gap: 10px; border-bottom: 2px solid var(--border); padding-bottom: 4px; margin-bottom: 6px; }
+.gv-mes-t b { font-family: var(--f-title); font-weight: 800; font-size: 17px; }
+.gv-mes-t span { font-size: 12px; color: var(--dgray); }
+.gv-row { display: grid; grid-template-columns: 190px 1.1fr 1.5fr 150px auto; gap: 6px 12px; align-items: center; background: var(--white); border: 1px solid var(--border); border-left: 5px solid var(--st); border-radius: var(--r); padding: 8px 12px; margin-bottom: 6px; --st: var(--c-gi); }
+.gv-row.venc { --st: #B02029; } .gv-row.pronto { --st: var(--c-eval); } .gv-row.anio { --st: #E0B400; }
+.gv-est { display: inline-flex; align-items: center; gap: 6px; font-family: var(--f-title); font-weight: 700; font-size: 12px; text-transform: uppercase; letter-spacing: .4px; color: var(--c-gi-ink); }
+.gv-row.venc .gv-est { color: #B02029; } .gv-row.pronto .gv-est { color: var(--c-eval-ink); } .gv-row.anio .gv-est { color: var(--yellow-ink); }
+.gv-est svg { width: 16px; height: 16px; flex: none; }
+.gv-c b { display: block; font-weight: 600; } .gv-c small { color: var(--dgray); font-size: 12px; }
+.gv-row .rchip { justify-self: start; }
+.gv-row .rchip.sello { border-color: var(--tc); color: var(--tink); }
+.gv-o { font-size: 12.5px; color: var(--dgray); }
+.gv-proc { display: inline-flex; align-items: center; gap: 5px; font-size: 12px; font-weight: 600; color: var(--c-eval-ink); background: #FDEBDD; border-radius: var(--r); padding: 3px 8px; }
+.gv-proc svg { width: 13px; height: 13px; }
+.gp-rels { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 14px; }
+.gp-rel { display: inline-flex; align-items: center; gap: 6px; font-size: 13px; background: var(--white); border: 1px solid var(--border); border-radius: var(--r); padding: 6px 10px; }
+.gp-rel svg { width: 14px; height: 14px; color: var(--c-gi); }
+.gp-grid { grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); }
+.gp-card { border-top: 4px solid var(--tc); padding: 16px 18px; }
+.gp-h { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; }
+.gp-h img { width: 40px; height: 40px; object-fit: contain; flex: none; }
+.gp-h h3 { font-family: var(--f-title); font-weight: 800; font-size: 17px; line-height: 1.1; }
+.gp-h small { font-size: 12px; color: var(--dgray); }
+.gp-n { margin-left: auto; font-family: var(--f-title); font-weight: 800; font-size: 30px; color: var(--tink); }
+.gp-card ul { list-style: none; margin: 0; padding: 0; }
+.gp-card li { display: grid; grid-template-columns: 1fr 70px 48px; gap: 8px; align-items: center; padding: 5px 0; border-top: 1px solid var(--cream2); font-size: 13.5px; }
+.gp-bar { height: 8px; background: var(--cream2); border-radius: 4px; overflow: hidden; }
+.gp-bar i { display: block; height: 100%; background: var(--tc); }
+.gp-v { text-align: right; font-weight: 600; font-size: 12.5px; }
+.gp-proc { display: block; font-style: normal; font-size: 11.5px; font-weight: 600; color: var(--c-eval-ink); }
+.gc-grid { grid-template-columns: 1fr 1fr; }
+.gc-card { --acc: var(--c-gi); padding: 16px 18px; }
+.gc-card h3 { font-family: var(--f-title); font-weight: 800; font-size: 18px; }
+.gc-n { color: var(--c-gi-ink); font-size: 26px; }
+.gc-card ul { list-style: none; margin: 8px 0 0; padding: 0; columns: 2; column-gap: 18px; }
+.gc-card li { break-inside: avoid; padding: 4px 0; font-size: 13.5px; border-bottom: 1px solid var(--cream2); }
+.gc-card li small { display: block; color: var(--dgray); font-size: 12px; }
+@media (max-width: 900px) {
+  .gv-row { grid-template-columns: 1fr 1fr; }
+  .gv-row .gv-est { grid-column: 1 / -1; }
+  .gc-grid { grid-template-columns: 1fr; }
+}
+@media (max-width: 680px) {
+  .g-kpis { grid-template-columns: 1fr 1fr; }
+  .gv-row { grid-template-columns: 1fr; }
+  .gc-card ul { columns: 1; }
+}
 </style>
 </head>
 <body>
@@ -818,6 +906,7 @@ body[data-sec="mapa"] { --acc: var(--c-mapa); }
       <a href="#certificacion" data-sec-link="cert">Certificación</a>
       <a href="#sellos" data-sec-link="sellos">Sellos</a>
       <a href="#mapa" data-sec-link="mapa">Mapa</a>
+      <a href="#gestion-interna" data-sec-link="gestion" class="hnav-gi">Gestión interna</a>
     </nav>
     <a class="header-stat" href="#mapa" aria-label="Ver el mapa de ciudades reconocidas">
       <div><div class="num"><span data-bind="nReconocidas">–</span></div></div>
@@ -856,6 +945,10 @@ body[data-sec="mapa"] { --acc: var(--c-mapa); }
       <div class="tabs-group" data-tabs="mapa" hidden>
         <a class="tab" href="#mapa" data-view-link="mapa">Mapa de reconocimientos <span class="count" data-bind="nReconocidas">–</span></a>
         <a class="tab" href="#teoria-del-cambio" data-view-link="tdc">Teoría del cambio</a>
+      </div>
+      <div class="tabs-group" data-tabs="gestion" hidden>
+        <a class="tab" href="#gestion-interna" data-view-link="gi-venc">Vencimientos y renovaciones</a>
+        <a class="tab" href="#proximo-sello" data-view-link="gi-prox">Próximo sello</a>
       </div>
     </div>
   </nav>
@@ -1171,6 +1264,7 @@ body[data-sec="mapa"] { --acc: var(--c-mapa); }
     <h2 class="h2" id="t-mapa">Dónde están las ciudades reconocidas</h2>
     <p class="lead">Ciudades con Certificación en Gestión Eficiente o con un Sello RIL, y las que están en evaluación o son potenciales. Combiná los filtros para explorar; el mapa, los gráficos y el listado se actualizan juntos.</p>
 
+    <div class="card accent m-pob" data-render="mPob" aria-live="polite"></div>
     <div class="grid m-kpis kpis" data-render="mKpis"></div>
 
     <div class="toolbar" role="search" aria-label="Filtros del mapa">
@@ -1204,6 +1298,8 @@ body[data-sec="mapa"] { --acc: var(--c-mapa); }
         <div class="card chart"><h3>Por tamaño de ciudad</h3><div data-render="chTam"></div></div>
       </div>
     </div>
+
+    <div class="card m-concl" data-render="mConcl"></div>
 
     <h3 class="sub-h" style="margin-top:22px">Ciudades <span style="color:var(--dgray);font-weight:700;font-size:15px" data-bind="mResultadosCorto"></span></h3>
     <div class="grid m-list" data-render="mLista"></div>
@@ -1250,6 +1346,44 @@ body[data-sec="mapa"] { --acc: var(--c-mapa); }
     <div class="card tdc-tabla-wrap"><table class="tdc-tabla" data-render="tdcTabla"></table></div>
   </section>
 </div>
+
+<!-- =================== GESTIÓN INTERNA · VENCIMIENTOS =================== -->
+<div id="vista-gi-venc" data-view="gi-venc" hidden>
+  <section class="section" id="vencimientos" aria-labelledby="t-gv">
+    <div class="sec-top">
+      <div class="label"><span class="dot"></span>Gestión interna <span class="data-note" data-note="ciudades sellos proceso" hidden></span></div>
+      <div class="upd-box"><button class="btn-upd" data-actualizar="mapa" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 12a8 8 0 0 1-14.3 4.9M4 12A8 8 0 0 1 18.3 7.1"/><path d="M18.5 3v4.3h-4.3M5.5 21v-4.3h4.3"/></svg><span>Actualizar datos</span></button><span class="upd-msg" data-msg="mapa" role="status"></span></div>
+    </div>
+    <h2 class="h2" id="t-gv">Vencimientos y renovaciones</h2>
+    <p class="lead">Calendario de vencimiento de las certificaciones y los sellos otorgados (<span data-bind="gVTot">–</span> en total). Tocá un estado para filtrar.</p>
+    <div class="grid g-kpis" data-render="gVKpis"></div>
+    <div class="toolbar"><div class="frow" role="group" aria-labelledby="gvl-t"><span class="fl" id="gvl-t">Reconocimiento</span><span data-render="gVTipo" class="frow"></span></div></div>
+    <div data-render="gVLista"></div>
+    <p class="ch-nota" data-render="gVNota" style="margin-top:14px"></p>
+  </section>
+</div>
+
+<!-- =================== GESTIÓN INTERNA · PRÓXIMO SELLO =================== -->
+<div id="vista-gi-prox" data-view="gi-prox" hidden>
+  <section class="section" id="proximo-sello" aria-labelledby="t-gp">
+    <div class="sec-top">
+      <div class="label"><span class="dot"></span>Gestión interna <span class="data-note" data-note="ciudades sellos proceso" hidden></span></div>
+      <div class="upd-box"><button class="btn-upd" data-actualizar="mapa" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 12a8 8 0 0 1-14.3 4.9M4 12A8 8 0 0 1 18.3 7.1"/><path d="M18.5 3v4.3h-4.3M5.5 21v-4.3h4.3"/></svg><span>Actualizar datos</span></button><span class="upd-msg" data-msg="mapa" role="status"></span></div>
+    </div>
+    <h2 class="h2" id="t-gp">Próximo sello sugerido</h2>
+    <p class="lead">Ciudades certificadas con <span data-bind="gPUmbral">80%</span> o más en un eje relacionado con un sello que todavía no tienen: <b><span data-bind="gPCand">–</span> candidatas</b> y <span data-bind="gPProc">–</span> que ya figuran en "Ciudades en proceso".</p>
+    <div class="gp-rels" data-render="gPMapa"></div>
+    <div class="grid gp-grid" data-render="gPLista"></div>
+  </section>
+  <section class="section" id="cruces" aria-labelledby="t-gc">
+    <div class="label"><span class="dot"></span>Cruces</div>
+    <h2 class="h2" id="t-gc">Oportunidades entre certificación y sellos</h2>
+    <div class="grid gc-grid">
+      <div class="card accent gc-card"><h3><span class="gc-n" data-bind="gSoloSel">–</span> ciudades con sellos y sin certificación</h3><p class="ch-nota">Candidatas para ofrecerles la certificación.</p><ul data-render="gSoloSelL"></ul></div>
+      <div class="card accent gc-card"><h3><span class="gc-n" data-bind="gSoloCert">–</span> ciudades certificadas sin sellos</h3><p class="ch-nota">Candidatas para un primer sello.</p><ul data-render="gSoloCertL"></ul></div>
+    </div>
+  </section>
+</div>
 </main>
 
 <!-- =================== PANEL DE EJE =================== -->
@@ -1288,6 +1422,7 @@ body[data-sec="mapa"] { --acc: var(--c-mapa); }
       <div>Ciudades en proceso: <b data-bind="updProceso">cargando…</b></div>
       <div>Índice de clima de inversiones: <b data-bind="updIcil">cargando…</b></div>
     </div>
+    <a class="foot-gi" href="#gestion-interna">Gestión interna</a>
     <div class="site"><a href="https://redinnovacionlocal.org" target="_blank" rel="noopener">redinnovacionlocal.org</a> · <span data-bind="anio">2026</span></div>
   </div>
 </footer>
@@ -1584,6 +1719,22 @@ const TDC = {
     "Cuando el 16% del grupo objetivo —la suma de innovadores y adoptadores tempranos— adopta el cambio, se alcanza el punto mínimo para el cambio: a partir de ahí, la mayoría más resistente empieza a considerarlo relevante.",
     "En Argentina, el grupo objetivo son los 535 gobiernos locales de más de 10.000 habitantes, donde vive el 91% de la población. El primer paso es detectar a los cerca de 14 que ya son faro de oportunidades (innovadores). El segundo, inspirar y acompañar a más de 70 que están muy cerca de la innovación (adoptadores tempranos).",
     "Cuando RIL logre generar, fortalecer y visibilizar a cerca de 100 gobiernos locales como ciudades de oportunidades, el cambio cultural será irreversible: habremos cambiado los estándares de los gobiernos locales del país."
+  ]
+};
+
+// Población total del país para el número grande del mapa (Censo 2022, INDEC)
+const POBLACION_PAIS = { total: 45892285, fuente: "Censo 2022" };
+
+// Solapa "Gestión interna": vencimientos y próximo sello sugerido
+const GESTION = {
+  vigenciaAnios: 3,           // la certificación y los sellos duran 3 años desde el otorgamiento
+  alertaMeses: [6, 12],       // "vence pronto" (≤ 6 meses) y "vence en el año" (6 a 12 meses)
+  umbralEje: 80,              // % mínimo en el eje de la certificación para sugerir el sello relacionado
+  // Relación eje de la certificación → sellos (id del eje: td, he, prof, ac, ch, ga)
+  ejeSello: [
+    { eje: "td",   sellos: ["Ciudad Digital", "Ciudad de la Inteligencia Artificial"] },
+    { eje: "he",   sellos: ["Eficiencia en las Finanzas Locales"] },
+    { eje: "prof", sellos: ["Ciudad Planificada"] }
   ]
 };
 
@@ -2588,7 +2739,7 @@ const MAPA_AR = {"proj": {"minx": -73.568399, "maxy": -21.786938, "k": 0.7880107
     const ocultar = SELLOS_CONFIG.ocultar.map(norm);
     return base.map((r) => {
       const sello = selloCanon(r[iS], nombres);
-      return { ciudad: String(r[iC]).replace(/\s+/g, " ").trim(), provincia: String(r[iP] ?? "").trim(), sello, anio: anioDe(r[iF], iE >= 0 ? r[iE] : ""),
+      return { ciudad: String(r[iC]).replace(/\s+/g, " ").trim(), provincia: String(r[iP] ?? "").trim(), sello, anio: anioDe(r[iF], iE >= 0 ? r[iE] : ""), fechaInfo: leerFecha(iF >= 0 ? r[iF] : ""),
         puntaje: iPt >= 0 ? pctDe(r[iPt]) : null, tam: iT >= 0 ? tamKey(r[iT]) : "", region: iR >= 0 ? regionDe(r[iR]) : "", partido: iPa >= 0 ? partidoDe(r[iPa]) : "" };
     }).filter((s) => !ocultar.includes(norm(s.sello)));
   }
@@ -2612,11 +2763,12 @@ const MAPA_AR = {"proj": {"minx": -73.568399, "maxy": -21.786938, "k": 0.7880107
       const f = ficha(c.ciudad, { provincia: c.provincia, tam: tamKey(c.tamanio) });
       const nv = nivelDe(c.nivelId);
       recs.push({ key: f.key, tipo: "cert", nombre: nv ? nv.nombre : ("Certificación " + (c.nivel || "")), nivelId: c.nivelId,
-        anio: c.fechaInfo && c.fechaInfo.orden ? Math.floor(c.fechaInfo.orden / 100) : anioDe(c.fecha), puntaje: c.totalPct });
+        anio: c.fechaInfo && c.fechaInfo.orden ? Math.floor(c.fechaInfo.orden / 100) : anioDe(c.fecha), puntaje: c.totalPct,
+        orden: c.fechaInfo ? Math.floor(c.fechaInfo.orden) : 0, nivelTxt: c.nivel, ejesPct: c.ejesPct });
     });
     estado.sellos.forEach((s) => {
       const f = ficha(s.ciudad, s);
-      recs.push({ key: f.key, tipo: "sello", nombre: s.sello, anio: s.anio, puntaje: s.puntaje });
+      recs.push({ key: f.key, tipo: "sello", nombre: s.sello, anio: s.anio, puntaje: s.puntaje, orden: s.fechaInfo ? Math.floor(s.fechaInfo.orden) : 0 });
     });
     // Ciudades en proceso (en evaluación / potenciales): no suman a los reconocimientos
     const conocidos = [...new Set(estado.sellos.map((s) => s.sello))];
@@ -3053,6 +3205,7 @@ const MAPA_AR = {"proj": {"minx": -73.568399, "maxy": -21.786938, "k": 0.7880107
     bindAll("mResultadosCorto", `(${ciudades.size})`);
     $("#m-limpiar").hidden = !filtrando;
     renderMapa(recs);
+    renderPoblacion(recs); renderConclusiones();
     renderGraficos(recs, procs);
     estado.procSolo = agrupar(procs.filter((p) => !ciudades.has(p.key)));
     renderCobertura();
@@ -3309,13 +3462,136 @@ const MAPA_AR = {"proj": {"minx": -73.568399, "maxy": -21.786938, "k": 0.7880107
         <td><span class="tdc-bar"><span style="width:${Math.min(100, (x.V0 / x.meta) * 100)}%;background:${x.ink}"></span><span class="pl" style="width:${Math.min(100, ((x.planFin - x.V0) / x.meta) * 100)}%;border-color:${x.ink}"></span></span></td>
         <td><span class="tdc-etapa ${x.V0 >= TDC.innovadores ? "ea" : "in"}">${esc(x.etapa)}</span></td></tr>`).join("") + "</tbody>";
   }
+  /* =====================================================================
+     MAPA: POBLACIÓN ALCANZADA Y CONCLUSIONES · GESTIÓN INTERNA
+     ===================================================================== */
+  const fmtMill = (n) => n >= 1e6 ? (n / 1e6).toLocaleString("es-AR", { maximumFractionDigits: 1 }) + " millones" : n.toLocaleString("es-AR");
+  const pobDeKeys = (keys) => { let p = 0, sin = []; keys.forEach((k) => { const c = estado.fichas.get(k); if (c && c.pob != null) p += c.pob; else if (c) sin.push(c.ciudad); }); return { p, sin }; };
+
+  // Número grande: personas que viven en ciudades reconocidas (se recalcula con los filtros)
+  function renderPoblacion(recs) {
+    const el = $('[data-render="mPob"]'); if (!el) return;
+    const keys = new Set(recs.map((r) => r.key)), kc = new Set(recs.filter((r) => r.tipo === "cert").map((r) => r.key));
+    const T = pobDeKeys(keys), C = pobDeKeys(kc), tot = POBLACION_PAIS.total;
+    el.innerHTML = keys.size ? `<div class="pob-num"><b>${fmtMill(T.p)}</b><span>de personas viven en ciudades reconocidas por RIL</span></div>
+      <div class="pob-det"><div><b>${pct1((T.p / tot) * 100)}</b><span>de la población del país</span></div>
+      <div><b>${fmtMill(C.p)}</b><span>en ciudades certificadas (${pct1((C.p / tot) * 100)})</span></div></div>
+      <p class="pob-nota">Población de cada ciudad según la pestaña "Ciudades"; total del país: ${tot.toLocaleString("es-AR")} habitantes (${POBLACION_PAIS.fuente}). No incluye ciudades en proceso.${T.sin.length ? ` Sin población cargada: ${esc(T.sin.join(", "))}.` : ""}</p>`
+      : `<div class="pob-num"><b>0</b><span>personas en ciudades reconocidas con estos filtros</span></div>`;
+  }
+
+  // Leyenda "Lo que muestra el mapa": frases armadas a partir de todos los reconocimientos otorgados
+  function renderConclusiones() {
+    const el = $('[data-render="mConcl"]'); if (!el || !estado.recs) return;
+    const keys = [...new Set(estado.recs.map((r) => r.key))], F = keys.map((k) => estado.fichas.get(k)).filter(Boolean), n = F.length;
+    if (!n) { el.innerHTML = ""; return; }
+    const cuenta = (fn) => { const m = new Map(); F.forEach((c) => { const v = fn(c); if (v) m.set(v, (m.get(v) || 0) + 1); }); return m; };
+    const provs = cuenta((c) => provKey(c.provincia)), totProv = CENSO.prov.size || 24;
+    const reg = cuenta((c) => c.region !== "Sin dato" && c.region), regOrd = REGIONES.map((r) => [r, reg.get(r) || 0]).sort((a, b) => b[1] - a[1]);
+    const sinReg = regOrd.filter(([, v]) => !v).map(([r]) => r), conReg = regOrd.filter(([, v]) => v);
+    const par = [...cuenta((c) => c.partido !== "Sin dato" && c.partido).entries()].sort((a, b) => b[1] - a[1]);
+    const tam = cuenta((c) => c.tam), T = pobDeKeys(keys);
+    const lista = (arr) => arr.length > 1 ? arr.slice(0, -1).join(", ") + " y " + arr[arr.length - 1] : arr[0] || "";
+    const [r1, v1] = conReg[0];
+    const frases = [
+      ["mundo", "Alcance federal", `${n} ciudades reconocidas en ${provs.size} de las ${totProv} provincias.`],
+      ["pin", "Regiones", `la región ${r1} concentra ${v1} de las ${n} (${Math.round((v1 / n) * 100)}%)${conReg.length > 1 ? `. Siguen ${lista(conReg.slice(1).map(([r, v]) => `${r} (${v})`))}` : ""}.${sinReg.length ? ` ${lista(sinReg)} todavía no ${sinReg.length === 1 ? "tiene" : "tienen"} ciudades reconocidas.` : ""}`],
+      ["personas", "Diversidad política", `hay ciudades gobernadas por ${par.length} fuerzas políticas distintas.${par.length ? ` La más frecuente (${par[0][0]}) reúne ${par[0][1]} de ${n}${par.length > 2 ? `; le siguen ${par[1][0]} (${par[1][1]}) y ${par[2][0]} (${par[2][1]})` : ""}.` : ""}`],
+      ["brujula", "Todos los tamaños", lista(TAMANIOS.filter((t) => tam.get(t.k)).map((t) => `${tam.get(t.k)} de ${t.label.toLowerCase()}`))],
+      ["personas", "Población", `${fmtMill(T.p)} de personas viven en ciudades reconocidas.`]
+    ];
+    el.innerHTML = `<h3>Lo que muestra el mapa</h3><p class="ch-nota" style="margin:-4px 0 10px">Conclusiones calculadas con todos los reconocimientos otorgados, sin filtros.</p>
+      <ul class="concl">${frases.map(([ic, t, x]) => `<li>${svg(ic)}<span><b>${t}:</b> ${esc(x)}</span></li>`).join("")}</ul>`;
+  }
+
+  /* ---------- Gestión interna ---------- */
+  const MES_TXT = (o) => { const y = Math.floor(o / 100), m = o % 100; return `${MESES[m][0].toUpperCase()}${MESES[m].slice(1)} ${y}`; };
+  const mesesEntre = (a, b) => (Math.floor(b / 100) * 12 + (b % 100)) - (Math.floor(a / 100) * 12 + (a % 100));
+  const hoyOrden = () => { const d = new Date(); return d.getFullYear() * 100 + d.getMonth(); };
+  const ESTADOS_VENC = {
+    venc: { t: "Vencido", ic: "alerta" }, pronto: { t: "Vence en 6 meses o menos", ic: "alerta" },
+    anio: { t: "Vence en 6 a 12 meses", ic: "calendario" }, ok: { t: "Vigente", ic: "check" }
+  };
+  function vencimientos() {
+    const hoy = hoyOrden(), ult = new Map(), sinFecha = [];
+    (estado.recs || []).forEach((r) => {
+      if (!r.orden) { sinFecha.push(r); return; }
+      const k = r.key + "|" + (r.tipo === "cert" ? "cert" : norm(r.nombre));
+      if (!ult.has(k) || ult.get(k).orden < r.orden) ult.set(k, r);
+    });
+    const lista = [...ult.values()].map((r) => {
+      const o = Math.floor(r.orden / 100) * 100 + (r.orden % 100), vence = o + GESTION.vigenciaAnios * 100, faltan = mesesEntre(hoy, vence);
+      const est = faltan < 0 ? "venc" : faltan <= GESTION.alertaMeses[0] ? "pronto" : faltan <= GESTION.alertaMeses[1] ? "anio" : "ok";
+      const enProc = (estado.proc || []).find((p) => p.key === r.key && p.tipo === r.tipo && (r.tipo === "cert" || norm(p.nombre) === norm(r.nombre)));
+      return { r, c: estado.fichas.get(r.key), o, vence, faltan, est, enProc };
+    }).sort((a, b) => a.vence - b.vence || a.c.ciudad.localeCompare(b.c.ciudad, "es"));
+    return { lista, sinFecha };
+  }
+  function renderVencimientos() {
+    const { lista, sinFecha } = vencimientos(), f = estado.fg || (estado.fg = { tipo: "", est: "" });
+    const n = (e) => lista.filter((x) => x.est === e).length;
+    $('[data-render="gVKpis"]').innerHTML = ["venc", "pronto", "anio", "ok"].map((e) =>
+      `<button class="card accent kpi gk ${e}" data-gv-est="${e}" aria-pressed="${f.est === e}"><div class="v">${n(e)}</div><div class="l">${ESTADOS_VENC[e].t}</div></button>`).join("");
+    $('[data-render="gVTipo"]').innerHTML = [["", "Todos"], ["cert", "Certificación"], ["sello", "Sellos"]].map(([v, t]) =>
+      `<button class="fbtn" data-gv-tipo="${v}" aria-pressed="${f.tipo === v}"${v === "cert" ? ' style="--c:var(--c-cert)"' : v === "sello" ? ' style="--c:var(--c-sel)"' : ""}>${t}</button>`).join("");
+    const vis = lista.filter((x) => (!f.tipo || x.r.tipo === f.tipo) && (!f.est || x.est === f.est));
+    const grupos = new Map(); vis.forEach((x) => { if (!grupos.has(x.vence)) grupos.set(x.vence, []); grupos.get(x.vence).push(x); });
+    $('[data-render="gVLista"]').innerHTML = vis.length ? [...grupos.entries()].map(([v, xs]) => `<div class="gv-mes">
+        <div class="gv-mes-t"><b>${MES_TXT(v)}</b><span>${xs.length} ${xs.length === 1 ? "reconocimiento" : "reconocimientos"}</span></div>
+        ${xs.map((x) => `<div class="gv-row ${x.est}">
+          <span class="gv-est" title="${ESTADOS_VENC[x.est].t}">${svg(ESTADOS_VENC[x.est].ic)}<span>${ESTADOS_VENC[x.est].t}</span></span>
+          <span class="gv-c"><b>${esc(x.c.ciudad)}</b><small>${esc(x.c.provincia)}</small></span>
+          <span class="rchip ${x.r.tipo}" ${x.r.tipo === "sello" ? `style="${estiloTema(x.r.nombre)}"` : ""}>${svg(x.r.tipo === "cert" ? "check" : "medalla")}${x.r.tipo === "cert" ? "Certificación · " : ""}${esc(x.r.nombre)}</span>
+          <span class="gv-o">Otorgado: ${MES_TXT(x.o)}</span>
+          ${x.enProc ? `<span class="gv-proc">${svg("sync")}Renovación en proceso</span>` : ""}
+        </div>`).join("")}</div>`).join("") : `<div class="empty">No hay reconocimientos con esos filtros.</div>`;
+    bindAll("gVTot", `${lista.length}`);
+    $('[data-render="gVNota"]').textContent = `Vigencia: ${GESTION.vigenciaAnios} años desde el mes de otorgamiento. Si una ciudad recibió el mismo reconocimiento más de una vez, se toma la última entrega.`
+      + (sinFecha.length ? ` Sin fecha cargada (no se incluyen): ${sinFecha.map((r) => `${estado.fichas.get(r.key).ciudad} – ${r.nombre}`).join("; ")}.` : "");
+  }
+
+  function renderProximoSello() {
+    const ej = (id) => EJES.find((e) => e.id === id), U = GESTION.umbralEje;
+    const certs = (estado.recs || []).filter((r) => r.tipo === "cert" && r.ejesPct);
+    const tiene = (k, s) => estado.recs.some((r) => r.key === k && r.tipo === "sello" && norm(r.nombre) === norm(s));
+    const enProc = (k, s) => (estado.proc || []).find((p) => p.key === k && p.tipo === "sello" && norm(p.nombre) === norm(s));
+    let nCand = 0, nProc = 0;
+    const bloques = GESTION.ejeSello.flatMap(({ eje, sellos }) => sellos.map((s) => {
+      const seen = new Set();
+      const cs = certs.filter((r) => r.ejesPct[eje] != null && r.ejesPct[eje] >= U && !tiene(r.key, s) && !seen.has(r.key) && seen.add(r.key))
+        .map((r) => ({ c: estado.fichas.get(r.key), v: r.ejesPct[eje], p: enProc(r.key, s) })).sort((a, b) => b.v - a.v);
+      cs.forEach((x) => (x.p ? nProc++ : nCand++));
+      return { eje: ej(eje), s, cs };
+    }));
+    bindAll("gPCand", nCand); bindAll("gPProc", nProc); bindAll("gPUmbral", U + "%");
+    $('[data-render="gPMapa"]').innerHTML = GESTION.ejeSello.map(({ eje, sellos }) => `<span class="gp-rel"><b>${esc(ej(eje).nombre)}</b> ${svg("flecha")} ${sellos.map((s) => esc(s)).join(" · ")}</span>`).join("");
+    $('[data-render="gPLista"]').innerHTML = bloques.map(({ eje, s, cs }) => {
+      const t = temaDe(s);
+      return `<article class="card gp-card" style="${estiloTema(s)}">
+        <div class="gp-h"><img src="${logoTema(t)}" alt=""><div><h3>${esc(s)}</h3><small>Según el eje ${esc(eje.nombre)}</small></div><b class="gp-n">${cs.length}</b></div>
+        ${cs.length ? `<ul>${cs.map((x) => `<li><span class="gp-c">${esc(x.c.ciudad)}${x.p ? ` <em class="gp-proc">En proceso (${esc(ESTADOS_PROCESO[x.p.est].label)}${x.p.anio ? ", " + x.p.anio : ""})</em>` : ""}</span>
+          <span class="gp-bar" role="img" aria-label="${esc(eje.nombre)}: ${pct1(x.v)}"><i style="width:${x.v}%"></i></span><span class="gp-v">${pct1(x.v)}</span></li>`).join("")}</ul>`
+          : `<p class="empty" style="padding:8px 0">Ninguna ciudad certificada supera el ${U}% en este eje sin tener el sello.</p>`}
+      </article>`;
+    }).join("");
+    // Cruces inversos
+    const kCert = new Set((estado.recs || []).filter((r) => r.tipo === "cert").map((r) => r.key)), kSel = new Map();
+    (estado.recs || []).filter((r) => r.tipo === "sello").forEach((r) => { if (!kSel.has(r.key)) kSel.set(r.key, new Set()); kSel.get(r.key).add(r.nombre); });
+    const soloSel = [...kSel.keys()].filter((k) => !kCert.has(k)).map((k) => estado.fichas.get(k)).sort((a, b) => a.ciudad.localeCompare(b.ciudad, "es"));
+    const soloCert = [...kCert].filter((k) => !kSel.has(k)).map((k) => estado.fichas.get(k)).sort((a, b) => a.ciudad.localeCompare(b.ciudad, "es"));
+    bindAll("gSoloSel", soloSel.length); bindAll("gSoloCert", soloCert.length);
+    $('[data-render="gSoloSelL"]').innerHTML = soloSel.map((c) => `<li><b>${esc(c.ciudad)}</b> <small>${esc(c.provincia)} · ${[...kSel.get(c.key)].map(esc).join(", ")}</small></li>`).join("");
+    $('[data-render="gSoloCertL"]').innerHTML = soloCert.map((c) => `<li><b>${esc(c.ciudad)}</b> <small>${esc(c.provincia)}</small></li>`).join("") || `<li class="empty">Todas las ciudades certificadas tienen al menos un sello.</li>`;
+  }
+  function renderGestion() { if (!estado.recs) return; renderVencimientos(); renderProximoSello(); }
 
   /* ---------- secciones y vistas ---------- */
   const RUTAS = {
     "": ["cert", "cert-programa"], "#certificacion": ["cert", "cert-programa"],
     "#ciudades": ["cert", "cert-ciudades"], "#certificacion-ciudades": ["cert", "cert-ciudades"],
     "#sellos": ["sellos", "sellos-info"], "#sellos-ciudades": ["sellos", "sellos-ciudades"],
-    "#mapa": ["mapa", "mapa"], "#teoria-del-cambio": ["mapa", "tdc"]
+    "#mapa": ["mapa", "mapa"], "#teoria-del-cambio": ["mapa", "tdc"],
+    "#gestion-interna": ["gestion", "gi-venc"], "#vencimientos": ["gestion", "gi-venc"], "#proximo-sello": ["gestion", "gi-prox"]
   };
   function mostrarVista() {
     const h = location.hash || "";
@@ -3323,7 +3599,7 @@ const MAPA_AR = {"proj": {"minx": -73.568399, "maxy": -21.786938, "k": 0.7880107
     if (!ruta) {
       const el = h.length > 1 && document.getElementById(decodeURIComponent(h.slice(1)));
       const v = el && el.closest("[data-view]");
-      if (v) { const view = v.dataset.view; ruta = [view.startsWith("sellos") ? "sellos" : view === "mapa" || view === "tdc" ? "mapa" : "cert", view]; ancla = el; }
+      if (v) { const view = v.dataset.view; ruta = [view.startsWith("sellos") ? "sellos" : view === "mapa" || view === "tdc" ? "mapa" : view.startsWith("gi-") ? "gestion" : "cert", view]; ancla = el; }
       else ruta = RUTAS[""];
     }
     const [sec, vista] = ruta;
@@ -3333,10 +3609,11 @@ const MAPA_AR = {"proj": {"minx": -73.568399, "maxy": -21.786938, "k": 0.7880107
     $$("[data-sec-link]").forEach((a) => a.dataset.secLink === sec ? a.setAttribute("aria-current", "page") : a.removeAttribute("aria-current"));
     $$("[data-tabs]").forEach((g) => (g.hidden = g.dataset.tabs !== sec));
     $$("[data-subnav]").forEach((s) => (s.style.visibility = (vista === "cert-programa" || vista === "sellos-info") ? "visible" : "hidden"));
-    const titulos = { cert: "Certificación en Gestión Eficiente", sellos: "Sellos temáticos", mapa: vista === "tdc" ? "Teoría del cambio" : "Mapa de reconocimientos" };
+    const titulos = { cert: "Certificación en Gestión Eficiente", sellos: "Sellos temáticos", mapa: vista === "tdc" ? "Teoría del cambio" : "Mapa de reconocimientos", gestion: "Gestión interna" };
     document.title = `${titulos[sec]} · Reconocimientos RIL`;
     if (vista === "mapa") renderMapaTodo();
     if (vista === "tdc") renderTdc();
+    if (sec === "gestion") renderGestion();
     if (ancla) ancla.scrollIntoView();
     else window.scrollTo({ top: 0 });
   }
@@ -3368,6 +3645,7 @@ const MAPA_AR = {"proj": {"minx": -73.568399, "maxy": -21.786938, "k": 0.7880107
     renderEjes(); renderResumenCiudades(); renderNiveles(); renderFiltros(); renderCiudades();
     renderTotalesV3(); renderIcil(); renderSellosInfo(); renderSellosFiltros(); renderSellosCiudades(); renderMapaFiltros();
     if (document.body.dataset.sec === "mapa") { renderMapaTodo(); renderTdc(); }
+    if (document.body.dataset.sec === "gestion") renderGestion();
     if (ejeAbierto) renderPreguntas();
   }
 
@@ -3377,6 +3655,8 @@ const MAPA_AR = {"proj": {"minx": -73.568399, "maxy": -21.786938, "k": 0.7880107
       const up = ev.target.closest("[data-actualizar]");
       if (up) { actualizarDesdeBoton(up.dataset.actualizar); return; }
       const td = ev.target.closest("[data-tdc]");
+      const gv = ev.target.closest("[data-gv-est],[data-gv-tipo]");
+      if (gv) { const f = estado.fg || (estado.fg = { tipo: "", est: "" }); if (gv.dataset.gvEst != null) f.est = f.est === gv.dataset.gvEst ? "" : gv.dataset.gvEst; else f.tipo = gv.dataset.gvTipo; renderVencimientos(); return; }
       if (td) { estado.tdcSel = td.dataset.tdc; renderTdc(); if (td.tagName === "TR") $("#tdc-proyeccion").scrollIntoView({ behavior: "smooth" }); return; }
       const t = ev.target.closest("[data-icil],[data-eje],[data-sello],[data-ir-sello],[data-prov],[data-nivel],[data-toggle],[data-ir-nivel],[data-limpiar],#limpiar,#overlay,#p-close,[data-sf-prov],[data-sf-anio],#s-limpiar,[data-s-limpiar],[data-mf-tipo],[data-mf-est],[data-mf-color],#m-limpiar,[data-m-limpiar],[data-mprov],[data-mcity]");
       if (!t) return;
