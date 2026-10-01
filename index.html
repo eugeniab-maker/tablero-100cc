@@ -493,7 +493,10 @@ body[data-sec="mapa"] { --acc: var(--c-mapa); }
 .tile .t-here { display: none; font-family: var(--f-title); font-weight: 800; font-size: 11px; letter-spacing: 1px; text-transform: uppercase; background: var(--tc); color: #fff; border-radius: var(--r); padding: 2px 8px; }
 .tile[aria-current="page"] .t-here { display: inline-block; }
 
-.hero-logo { height: 70px; width: auto; display: block; margin-bottom: 14px; }
+.hero-head { display: flex; align-items: center; gap: 20px; margin-bottom: 6px; }
+.hero-head h1 { margin-bottom: 0; }
+.hero-logo { height: 92px; width: auto; display: block; flex: none; }
+@media (max-width: 680px) { .hero-head { gap: 12px; } .hero-logo { height: 62px; } .hero-head .label { flex-wrap: nowrap; align-items: flex-start; } .hero-head .label .dot { flex: none; margin-top: 4px; } }
 
 /* ---------- Sellos ---------- */
 .s-growth { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; }
@@ -894,6 +897,11 @@ body[data-sec="gestion"] { --acc: var(--c-gi); }
 /* Requisitos del Sello: 3 tarjetas */
 .reqs-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
 @media (max-width: 680px) { .reqs-3 { grid-template-columns: 1fr; } }
+
+/* Teoría del cambio: hitos */
+.tc-hito { stroke: #c9414f; stroke-width: 1.4; stroke-dasharray: 5 4; }
+.tc-hito-t { font-family: var(--f-title); font-weight: 700; font-size: 12px; fill: #A3323E; }
+.tdc-svg .tc-v { paint-order: stroke; stroke: #F6F2EB; stroke-width: 4px; stroke-linejoin: round; }
 </style>
 </head>
 <body>
@@ -986,9 +994,13 @@ body[data-sec="gestion"] { --acc: var(--c-gi); }
   <!-- 1. Objetivo -->
   <section class="section hero" id="objetivo" aria-labelledby="t-objetivo">
     <div>
-      <img class="hero-logo" data-logo="cc" alt="100 Ciudades Certificadas">
-      <div class="label"><span class="dot"></span><span data-text="programaNombre"></span></div>
-      <h1 id="t-objetivo" data-html="titulo"></h1>
+      <div class="hero-head">
+        <img class="hero-logo" data-logo="cc" alt="100 Ciudades Certificadas">
+        <div>
+          <div class="label"><span class="dot"></span><span data-text="programaNombre"></span></div>
+          <h1 id="t-objetivo" data-html="titulo"></h1>
+        </div>
+      </div>
       <p class="subtitle" data-text="bajada"></p>
       <div data-list="objetivo"></div>
       <div class="cta-row">
@@ -1657,7 +1669,7 @@ const CONTENIDO_ICIL = {
 // Mapa: ciudades en proceso (pestaña "Ciudades en proceso"). Cómo se muestra cada estado.
 const ESTADOS_PROCESO = {
   eval: { label: "En evaluación", plural: "En evaluación", kpi: "Ciudades en evaluación", seccion: "Ciudades en evaluación" },
-  pot:  { label: "Potencial", plural: "Potenciales", kpi: "Ciudades potenciales", seccion: "Ciudades con potencialidad" }
+  pot:  { label: "Potencial", plural: "Potenciales", kpi: "Ciudades potenciales", seccion: "Ciudades con potencial" }
 };
 
 // Temáticas de los Sellos RIL: color y logo de cada programa ("Paleta de colores e isologos").
@@ -1709,7 +1721,13 @@ const TDC = {
   anioBase: 2026,           // último año con datos logrados
   anioPlan: 2027,           // "planificado" hasta este año (ciudades en proceso)
   anioMeta: 2031,
-  curva: 2,                 // ideal: cada año se cubre (t/5)^curva de lo que falta → arranca lento y se acelera
+  // Ideal: cantidad de ciudades esperada por año (2027 a 2031). La misma serie vale para cada sello.
+  ideal: {
+    anios: [2027, 2028, 2029, 2030, 2031],
+    certificacion: [30, 45, 65, 80, 100],
+    sello: [18, 30, 45, 65, 86]
+  },
+  hitos: [{ anio: 2028, texto: "Noche de Intendentes" }],   // marcas sobre el gráfico
   grupos: [
     { nombre: "Innovadores", pct: 2.5, gl: 14 },
     { nombre: "Adoptadores tempranos", pct: 13.5, gl: 72 },
@@ -3224,7 +3242,7 @@ const MAPA_AR = {"proj": {"minx": -73.568399, "maxy": -21.786938, "k": 0.7880107
           : `<span class="rchip sello">${svg("medalla")}${esc(r.nombre)} <span class="yr">${r.anio || ""}</span></span>`).join("")}</div>
       </article>`;
     }).join("") : (soloProc.length ? "" : `<div class="empty">No hay ciudades con esos filtros. <button class="linkbtn" data-m-limpiar>Limpiar filtros</button></div>`);
-    // Cada ciudad en su categoría: en evaluación y con potencialidad. Si una ciudad está en más de una, se repite.
+    // Cada ciudad en su categoría: en evaluación y con potencial. Si una ciudad está en más de una, se repite.
     const niveles = {};
     ["eval", "pot"].forEach((est) => {
       niveles[est] = [...porProc.entries()].map(([k, all]) => ({ c: estado.fichas.get(k), ps: all.filter((p) => p.est === est), all, rs: ciudades.get(k) || [] }))
@@ -3374,8 +3392,9 @@ const MAPA_AR = {"proj": {"minx": -73.568399, "maxy": -21.786938, "k": 0.7880107
       const V0 = first.size, nuevos = new Map();
       proc.filter((p) => es(p) && p.anio && p.anio <= plan && !first.has(p.key)).forEach((p) => { const y = Math.max(p.anio, base); if (!nuevos.has(p.key) || nuevos.get(p.key) > y) nuevos.set(p.key, y); });
       const pl = []; for (let y = base; y <= plan; y++) pl.push([y, V0 + [...nuevos.values()].filter((a) => a <= y).length]);
-      const n = fin - base, ideal = [[base, V0]];
-      for (let i = 1; i <= n; i++) ideal.push([base + i, Math.min(t.meta, Math.round(V0 + (t.meta - V0) * Math.pow(i / n, TDC.curva)))]);
+      // Ideal: valores fijos por año (config TDC.ideal); nunca por debajo de lo ya logrado
+      const serie = esC ? TDC.ideal.certificacion : TDC.ideal.sello, ideal = [[base, V0]];
+      TDC.ideal.anios.forEach((y, i) => ideal.push([y, Math.max(V0, serie[i])]));
       const etapa = V0 >= TDC.puntoMinimo ? "Punto mínimo alcanzado" : V0 >= TDC.innovadores ? "Adoptadores tempranos" : "Innovadores";
       return { ...t, ink: tinta(t.color), log, plan: pl, ideal, V0, planFin: pl[pl.length - 1][1], idealPlan: (ideal.find((d) => d[0] === plan) || [0, V0])[1], falta: Math.max(0, t.meta - V0), etapa };
     });
@@ -3412,26 +3431,27 @@ const MAPA_AR = {"proj": {"minx": -73.568399, "maxy": -21.786938, "k": 0.7880107
   }
 
   function graficoTdc(s) {
-    const W = 720, H = 360, L = 44, R = 70, T = 18, B = 34, x0 = s.log[0][0], x1 = TDC.anioMeta;
+    const W = 720, H = 372, L = 44, R = 70, T = 30, B = 34, x0 = s.log[0][0], x1 = TDC.anioMeta;
     const ymax = Math.ceil((s.meta * 1.1) / 10) * 10;
     const X = (y) => L + ((y - x0) / (x1 - x0)) * (W - L - R), Y = (v) => T + (1 - v / ymax) * (H - T - B);
     const path = (arr) => arr.map((d, i) => `${i ? "L" : "M"}${X(d[0]).toFixed(1)} ${Y(d[1]).toFixed(1)}`).join("");
-    const banda = (a, b, txt, fill) => b <= ymax ? `<rect x="${L}" y="${Y(b).toFixed(1)}" width="${W - L - R}" height="${(Y(a) - Y(b)).toFixed(1)}" fill="${fill}"/><text x="${W - R - 6}" y="${(Y(b) + 14).toFixed(1)}" text-anchor="end" class="tc-band">${txt}</text>` : "";
+    const banda = (a, b, txt, fill, izq) => b <= ymax ? `<rect x="${L}" y="${Y(b).toFixed(1)}" width="${W - L - R}" height="${(Y(a) - Y(b)).toFixed(1)}" fill="${fill}"/><text x="${izq ? L + 8 : W - R - 6}" y="${(Y(b) + 14).toFixed(1)}" text-anchor="${izq ? "start" : "end"}" class="tc-band">${txt}</text>` : "";
     let grid = ""; for (let v = 0; v <= ymax; v += ymax > 60 ? 20 : 10) grid += `<line x1="${L}" x2="${W - R}" y1="${Y(v).toFixed(1)}" y2="${Y(v).toFixed(1)}" class="tc-grid"/><text x="${L - 8}" y="${(Y(v) + 4).toFixed(1)}" text-anchor="end" class="tc-ax">${v}</text>`;
     let xs = ""; for (let y = x0; y <= x1; y++) xs += `<text x="${X(y).toFixed(1)}" y="${H - 12}" text-anchor="middle" class="tc-ax">${y}</text>`;
     const pt = (d, cls, col, lab, above) => `<circle cx="${X(d[0]).toFixed(1)}" cy="${Y(d[1]).toFixed(1)}" r="${cls === "log" ? 4.5 : 3.8}" fill="${cls === "ideal" ? "#fff" : col}" stroke="${col}" stroke-width="2"><title>${lab} ${d[0]}: ${d[1]} ciudades</title></circle>`;
     const val = (d, col, dy) => `<text x="${X(d[0]).toFixed(1)}" y="${(Y(d[1]) + dy).toFixed(1)}" text-anchor="middle" class="tc-v" fill="${col}">${d[1]}</text>`;
     const planUp = s.planFin >= s.idealPlan;
     return `<svg viewBox="0 0 ${W} ${H}" class="tdc-svg" role="img" aria-label="${esc(s.corto)}: logrado ${s.V0} ciudades en ${TDC.anioBase}, planificado ${s.planFin} en ${TDC.anioPlan}, ideal ${s.meta} en ${TDC.anioMeta}.">
-      ${banda(0, TDC.innovadores, "Innovadores", "#EDE7DC")}${banda(TDC.innovadores, TDC.puntoMinimo, "Adoptadores tempranos", "#F6F2EB")}
+      ${banda(0, TDC.innovadores, "Innovadores", "#EDE7DC")}${banda(TDC.innovadores, TDC.puntoMinimo, "Adoptadores tempranos", "#F6F2EB", true)}
       ${grid}${xs}
+      ${(TDC.hitos || []).filter((h) => h.anio >= x0 && h.anio <= x1).map((h) => `<line x1="${X(h.anio).toFixed(1)}" x2="${X(h.anio).toFixed(1)}" y1="${T - 8}" y2="${H - B}" class="tc-hito"/><text x="${X(h.anio).toFixed(1)}" y="${T - 14}" text-anchor="middle" class="tc-hito-t">${esc(h.texto)} ${h.anio}</text>`).join("")}
       <line x1="${L}" x2="${W - R}" y1="${Y(s.meta).toFixed(1)}" y2="${Y(s.meta).toFixed(1)}" stroke="#1A1A1A" stroke-width="1.6"/>
       <text x="${W - R + 6}" y="${(Y(s.meta) + 4).toFixed(1)}" class="tc-meta">Meta ${s.meta}</text>
       ${s.meta !== TDC.puntoMinimo ? `<line x1="${L}" x2="${W - R}" y1="${Y(TDC.puntoMinimo).toFixed(1)}" y2="${Y(TDC.puntoMinimo).toFixed(1)}" stroke="#9A948C" stroke-dasharray="3 3"/><text x="${W - R + 6}" y="${(Y(TDC.puntoMinimo) + 4).toFixed(1)}" class="tc-ax">16% (${TDC.puntoMinimo})</text>` : ""}
       <path d="${path(s.ideal)}" fill="none" stroke="#4A4643" stroke-width="2.2" stroke-dasharray="2 5" stroke-linecap="round"/>
       <path d="${path(s.plan)}" fill="none" stroke="${s.ink}" stroke-width="2.6" stroke-dasharray="8 5"/>
       <path d="${path(s.log)}" fill="none" stroke="${s.ink}" stroke-width="3.2" stroke-linejoin="round"/>
-      ${s.ideal.slice(1).map((d) => pt(d, "ideal", "#4A4643", "Ideal") + val(d, "#4A4643", -9)).join("")}
+      ${s.ideal.slice(1).map((d) => pt(d, "ideal", "#4A4643", "Ideal") + (s.plan.some((q) => q[0] === d[0] && q[1] === d[1]) ? "" : val(d, "#4A4643", -9))).join("")}
       ${s.plan.slice(1).map((d) => pt(d, "plan", s.ink, "Planificado") + val(d, s.ink, planUp ? -10 : 18)).join("")}
       ${s.log.map((d, i) => pt(d, "log", s.ink, "Logrado") + (i === s.log.length - 1 || d[1] !== (s.log[i - 1] || [0, -1])[1] ? val(d, s.ink, -10) : "")).join("")}
     </svg>`;
@@ -3457,11 +3477,11 @@ const MAPA_AR = {"proj": {"minx": -73.568399, "maxy": -21.786938, "k": 0.7880107
       [s.meta, `Meta ${TDC.anioMeta}`, s.id === "cert" ? "100 ciudades certificadas" : "16% de los gobiernos locales"]
     ].map(([v, l, t], i) => `<div class="card accent kpi" style="--acc:${i === 3 ? "#1A1A1A" : s.ink}"><div class="v" style="color:${i === 3 ? "#1A1A1A" : s.ink}">${v}</div><div class="l">${l}</div><div class="s">${t}</div></div>`).join("");
     const falta = s.V0 < TDC.innovadores ? `Le faltan ${TDC.innovadores - s.V0} ciudades para completar el grupo de innovadores (${TDC.innovadores}).` : `Ya superó el grupo de innovadores (${TDC.innovadores}) y está en el de adoptadores tempranos.`;
-    $('[data-render="tdcNota"]').textContent = `${falta} El ideal parte de lo logrado en ${TDC.anioBase} y crece lento al principio y más rápido al final: cada año cubre una parte creciente de lo que falta (4%, 16%, 36%, 64% y 100%). El planificado suma las ciudades en evaluación y potenciales con año estimado hasta ${TDC.anioPlan}.`;
+    $('[data-render="tdcNota"]').textContent = `${falta} El ideal marca cuántas ciudades se esperan cada año (${TDC.ideal.anios.map((y, i) => `${y}: ${(s.id === "cert" ? TDC.ideal.certificacion : TDC.ideal.sello)[i]}`).join(" · ")}), con un impulso fuerte en ${(TDC.hitos[0] || {}).anio} por la ${(TDC.hitos[0] || {}).texto}. El planificado suma las ciudades en evaluación y potenciales con año estimado hasta ${TDC.anioPlan}.`;
     const cols = [TDC.anioBase, TDC.anioPlan];
-    $('[data-render="tdcTabla"]').innerHTML = `<thead><tr><th scope="col">Reconocimiento</th><th scope="col">Logrado ${TDC.anioBase}</th><th scope="col">Planificado ${TDC.anioPlan}</th><th scope="col">Ideal ${TDC.anioPlan}</th><th scope="col">Ideal 2029</th><th scope="col">Meta ${TDC.anioMeta}</th><th scope="col">Avance</th><th scope="col">Etapa</th></tr></thead><tbody>`
+    $('[data-render="tdcTabla"]').innerHTML = `<thead><tr><th scope="col">Reconocimiento</th><th scope="col">Logrado ${TDC.anioBase}</th><th scope="col">Planificado ${TDC.anioPlan}</th><th scope="col">Ideal ${TDC.anioPlan}</th><th scope="col">Ideal 2028</th><th scope="col">Meta ${TDC.anioMeta}</th><th scope="col">Avance</th><th scope="col">Etapa</th></tr></thead><tbody>`
       + S.map((x) => `<tr data-tdc="${esc(x.id)}" class="${x.id === s.id ? "on" : ""}" tabindex="0" role="button" aria-label="Ver ${esc(x.corto)}">
-        <th scope="row">${x.logo ? `<img src="${x.logo}" alt="">` : ""}${esc(x.corto)}</th><td><b style="color:${x.ink}">${x.V0}</b></td><td>${x.planFin}</td><td>${x.idealPlan}</td><td>${(x.ideal.find((d) => d[0] === 2029) || [0, "–"])[1]}</td><td><b>${x.meta}</b></td>
+        <th scope="row">${x.logo ? `<img src="${x.logo}" alt="">` : ""}${esc(x.corto)}</th><td><b style="color:${x.ink}">${x.V0}</b></td><td>${x.planFin}</td><td>${x.idealPlan}</td><td>${(x.ideal.find((d) => d[0] === 2028) || [0, "–"])[1]}</td><td><b>${x.meta}</b></td>
         <td><span class="tdc-bar"><span style="width:${Math.min(100, (x.V0 / x.meta) * 100)}%;background:${x.ink}"></span><span class="pl" style="width:${Math.min(100, ((x.planFin - x.V0) / x.meta) * 100)}%;border-color:${x.ink}"></span></span></td>
         <td><span class="tdc-etapa ${x.V0 >= TDC.innovadores ? "ea" : "in"}">${esc(x.etapa)}</span></td></tr>`).join("") + "</tbody>";
   }
