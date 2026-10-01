@@ -890,6 +890,10 @@ body[data-sec="gestion"] { --acc: var(--c-gi); }
   .gv-row { grid-template-columns: 1fr; }
   .gc-card ul { columns: 1; }
 }
+
+/* Requisitos del Sello: 3 tarjetas */
+.reqs-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+@media (max-width: 680px) { .reqs-3 { grid-template-columns: 1fr; } }
 </style>
 </head>
 <body>
@@ -1174,8 +1178,8 @@ body[data-sec="gestion"] { --acc: var(--c-gi); }
 
   <section class="section" id="sellos-requisitos" aria-labelledby="t-sreq">
     <div class="label"><span class="dot"></span>Qué se necesita</div>
-    <h2 class="h2" id="t-sreq">Para obtener el Sello, la ciudad debe cumplir cuatro requisitos</h2>
-    <div class="grid reqs reqs-4" data-render="sRequisitos"></div>
+    <h2 class="h2" id="t-sreq">Para obtener el Sello, la ciudad debe cumplir tres requisitos</h2>
+    <div class="grid reqs reqs-3" data-render="sRequisitos"></div>
   </section>
 
   <section class="section" id="sellos-convenio" aria-labelledby="t-sconv">
@@ -1578,12 +1582,12 @@ const CONTENIDO_SELLOS = {
   // El proceso en 4 etapas (máximo 8 semanas)
   pasos: [
     { titulo: "Firma del convenio", icono: "firma", semanas: [1, 1],
-      texto: "Formaliza los compromisos de ambas partes y designa un/a referente del Sello RIL, que encabeza el equipo de trabajo de la ciudad. En general, este equipo necesita el apoyo de otras áreas para validar los indicadores de la temática." },
+      texto: "Formaliza los compromisos de ambas partes y designa un/a referente del Sello RIL, que encabeza el equipo de trabajo de la ciudad." },
     { titulo: "Pre-evaluación", icono: "cuestionario", semanas: [2, 3],
-      texto: "La ciudad responde solo los indicadores de criterios mínimos de la temática elegida y los acompaña con documentación que valida el/la referente de RIL. Si el resultado es exitoso, pasa a la evaluación. Si alguna área necesita mejoras, RIL indica el programa de acompañamiento adecuado para seguir avanzando." },
+      texto: "La ciudad responde solo los indicadores de criterios mínimos de la temática elegida y los acompaña con documentación que valida el/la referente de RIL. Si el resultado es exitoso, pasa a la evaluación." },
     { titulo: "Evaluación", icono: "cuestionario", semanas: [4, 6],
       texto: "La ciudad completa el resto de los indicadores y agrega la documentación respaldatoria para todas las preguntas. Un/a facilitador/a de RIL acompaña la validación y da devolución sobre la documentación." },
-    { titulo: "Respaldo y validación", icono: "validar", semanas: [7, 8],
+    { titulo: "Validación final", icono: "validar", semanas: [7, 8],
       texto: "Los criterios mínimos y las respuestas positivas se validan con evidencia de respaldo. Al finalizar, RIL informa el puntaje obtenido y entrega un resumen de los principales hallazgos y oportunidades de mejora y, si corresponde, el Sello RIL." }
   ],
   semanasTotal: 8,
@@ -1592,10 +1596,9 @@ const CONTENIDO_SELLOS = {
     { titulo: "2 meses como máximo", texto: "Duración objetivo del proceso (8 semanas).", icono: "reloj" }
   ],
   requisitos: [
-    { titulo: "Criterios mínimos", texto: "Cumplir satisfactoriamente los criterios mínimos del autodiagnóstico." },
-    { titulo: "Puntaje", texto: "Obtener un puntaje igual o mayor al 70%." },
     { titulo: "Documentación", texto: "Proveer la documentación respaldatoria antes de la fecha límite." },
-    { titulo: "Validación", texto: "Superar la instancia de validación de RIL." }
+    { titulo: "Criterios mínimos", texto: "Cumplir satisfactoriamente los criterios mínimos del IPPL." },
+    { titulo: "Puntaje", texto: "Obtener un puntaje igual o mayor al 70%." }
   ],
   numeros: [
     { valor: "2 meses", texto: "Duración máxima del proceso completo." },
@@ -1617,7 +1620,7 @@ const CONTENIDO_SELLOS = {
       "El proceso dura como máximo 2 meses (8 semanas), en cuatro etapas: firma, pre-evaluación, evaluación y validación.",
       "Para obtener el Sello hay que cumplir los criterios mínimos, alcanzar al menos 70% de puntaje, presentar la documentación a tiempo y superar la validación. El Sello tiene una validez de 3 años.",
       "RIL puede revocar el Sello si la ciudad abandona una práctica considerada criterio mínimo.",
-      "Las prácticas presentadas deben tener al menos 2 meses de funcionamiento; la información es confidencial y la comunicación va por canales oficiales."
+      "Las prácticas presentadas deben tener al menos 2 meses de funcionamiento; la información es confidencial y la comunicación se realiza por canales oficiales."
     ]
   },
   revocacion: "RIL se reserva el derecho de revocar el Sello RIL si el gobierno local abandona una práctica considerada criterio mínimo."
