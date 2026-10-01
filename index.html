@@ -901,7 +901,10 @@ body[data-sec="gestion"] { --acc: var(--c-gi); }
 /* Teoría del cambio: hitos */
 .tc-hito { stroke: #c9414f; stroke-width: 1.4; stroke-dasharray: 5 4; }
 .tc-hito-t { font-family: var(--f-title); font-weight: 700; font-size: 12px; fill: #A3323E; }
-.tdc-svg .tc-v { paint-order: stroke; stroke: #F6F2EB; stroke-width: 4px; stroke-linejoin: round; }
+.tdc-svg .tc-v { paint-order: stroke; stroke: #FFFFFF; stroke-width: 3px; stroke-linejoin: round; }
+.tc-nv { font-family: var(--f-title); font-weight: 800; font-size: 15px; fill: #4A4643; }
+.tc-nv.hito { fill: #A3323E; }
+.tc-nv-l { font-family: var(--f-title); font-weight: 700; font-size: 11px; text-transform: uppercase; letter-spacing: .6px; fill: #6F6A64; }
 </style>
 </head>
 <body>
@@ -3431,20 +3434,24 @@ const MAPA_AR = {"proj": {"minx": -73.568399, "maxy": -21.786938, "k": 0.7880107
   }
 
   function graficoTdc(s) {
-    const W = 720, H = 372, L = 44, R = 70, T = 30, B = 34, x0 = s.log[0][0], x1 = TDC.anioMeta;
+    const W = 720, H = 408, L = 44, R = 70, T = 30, B = 70, x0 = s.log[0][0], x1 = TDC.anioMeta;
     const ymax = Math.ceil((s.meta * 1.1) / 10) * 10;
     const X = (y) => L + ((y - x0) / (x1 - x0)) * (W - L - R), Y = (v) => T + (1 - v / ymax) * (H - T - B);
     const path = (arr) => arr.map((d, i) => `${i ? "L" : "M"}${X(d[0]).toFixed(1)} ${Y(d[1]).toFixed(1)}`).join("");
     const banda = (a, b, txt, fill, izq) => b <= ymax ? `<rect x="${L}" y="${Y(b).toFixed(1)}" width="${W - L - R}" height="${(Y(a) - Y(b)).toFixed(1)}" fill="${fill}"/><text x="${izq ? L + 8 : W - R - 6}" y="${(Y(b) + 14).toFixed(1)}" text-anchor="${izq ? "start" : "end"}" class="tc-band">${txt}</text>` : "";
     let grid = ""; for (let v = 0; v <= ymax; v += ymax > 60 ? 20 : 10) grid += `<line x1="${L}" x2="${W - R}" y1="${Y(v).toFixed(1)}" y2="${Y(v).toFixed(1)}" class="tc-grid"/><text x="${L - 8}" y="${(Y(v) + 4).toFixed(1)}" text-anchor="end" class="tc-ax">${v}</text>`;
-    let xs = ""; for (let y = x0; y <= x1; y++) xs += `<text x="${X(y).toFixed(1)}" y="${H - 12}" text-anchor="middle" class="tc-ax">${y}</text>`;
+    let xs = ""; for (let y = x0; y <= x1; y++) xs += `<text x="${X(y).toFixed(1)}" y="${H - B + 22}" text-anchor="middle" class="tc-ax">${y}</text>`;
+    // Fila "Nuevas por año": ciudades a sumar cada año según el ideal (no acumulado)
+    const nuevas = s.ideal.slice(1).map((d, i) => [d[0], Math.max(0, d[1] - s.ideal[i][1])]);
+    xs += `<line x1="${L}" x2="${W - R}" y1="${H - B + 32}" y2="${H - B + 32}" stroke="#D8D2C8"/><text x="${L}" y="${H - 13}" text-anchor="start" class="tc-nv-l">Nuevas por año (ideal)</text>`
+      + nuevas.map(([y, n]) => `<text x="${X(y).toFixed(1)}" y="${H - 12}" text-anchor="middle" class="tc-nv${(TDC.hitos || []).some((h) => h.anio === y) ? " hito" : ""}">+${n}<title>Ideal ${y}: sumar ${n} ${n === 1 ? "ciudad nueva" : "ciudades nuevas"}</title></text>`).join("");
     const pt = (d, cls, col, lab, above) => `<circle cx="${X(d[0]).toFixed(1)}" cy="${Y(d[1]).toFixed(1)}" r="${cls === "log" ? 4.5 : 3.8}" fill="${cls === "ideal" ? "#fff" : col}" stroke="${col}" stroke-width="2"><title>${lab} ${d[0]}: ${d[1]} ciudades</title></circle>`;
     const val = (d, col, dy) => `<text x="${X(d[0]).toFixed(1)}" y="${(Y(d[1]) + dy).toFixed(1)}" text-anchor="middle" class="tc-v" fill="${col}">${d[1]}</text>`;
     const planUp = s.planFin >= s.idealPlan;
     return `<svg viewBox="0 0 ${W} ${H}" class="tdc-svg" role="img" aria-label="${esc(s.corto)}: logrado ${s.V0} ciudades en ${TDC.anioBase}, planificado ${s.planFin} en ${TDC.anioPlan}, ideal ${s.meta} en ${TDC.anioMeta}.">
       ${banda(0, TDC.innovadores, "Innovadores", "#EDE7DC")}${banda(TDC.innovadores, TDC.puntoMinimo, "Adoptadores tempranos", "#F6F2EB", true)}
       ${grid}${xs}
-      ${(TDC.hitos || []).filter((h) => h.anio >= x0 && h.anio <= x1).map((h) => `<line x1="${X(h.anio).toFixed(1)}" x2="${X(h.anio).toFixed(1)}" y1="${T - 8}" y2="${H - B}" class="tc-hito"/><text x="${X(h.anio).toFixed(1)}" y="${T - 14}" text-anchor="middle" class="tc-hito-t">${esc(h.texto)} ${h.anio}</text>`).join("")}
+      ${(TDC.hitos || []).filter((h) => h.anio >= x0 && h.anio <= x1).map((h) => `<line x1="${X(h.anio).toFixed(1)}" x2="${X(h.anio).toFixed(1)}" y1="${T - 8}" y2="${H - B + 30}" class="tc-hito"/><text x="${X(h.anio).toFixed(1)}" y="${T - 14}" text-anchor="middle" class="tc-hito-t">${esc(h.texto)} ${h.anio}</text>`).join("")}
       <line x1="${L}" x2="${W - R}" y1="${Y(s.meta).toFixed(1)}" y2="${Y(s.meta).toFixed(1)}" stroke="#1A1A1A" stroke-width="1.6"/>
       <text x="${W - R + 6}" y="${(Y(s.meta) + 4).toFixed(1)}" class="tc-meta">Meta ${s.meta}</text>
       ${s.meta !== TDC.puntoMinimo ? `<line x1="${L}" x2="${W - R}" y1="${Y(TDC.puntoMinimo).toFixed(1)}" y2="${Y(TDC.puntoMinimo).toFixed(1)}" stroke="#9A948C" stroke-dasharray="3 3"/><text x="${W - R + 6}" y="${(Y(TDC.puntoMinimo) + 4).toFixed(1)}" class="tc-ax">16% (${TDC.puntoMinimo})</text>` : ""}
@@ -3468,7 +3475,7 @@ const MAPA_AR = {"proj": {"minx": -73.568399, "maxy": -21.786938, "k": 0.7880107
     $('[data-render="tdcSel"]').innerHTML = S.map((x) => `<button class="fbtn tdc-b" data-tdc="${esc(x.id)}" aria-pressed="${x.id === s.id}" style="--c:${x.ink}">${x.logo ? `<img src="${x.logo}" alt="">` : ""}${esc(x.corto)}</button>`).join("");
     $('[data-render="tdcChartH"]').innerHTML = `${s.logo ? `<img src="${s.logo}" alt="">` : ""}<div><h3>${esc(s.nombre)}</h3><span class="tdc-etapa ${s.V0 >= TDC.innovadores ? "ea" : "in"}">${esc(s.etapa)}</span></div>`;
     $('[data-render="tdcChart"]').innerHTML = graficoTdc(s);
-    $('[data-render="tdcLegend"]').innerHTML = `<span><i class="ln" style="border-top:3px solid ${s.ink}"></i>Logrado</span><span><i class="ln" style="border-top:3px dashed ${s.ink}"></i>Planificado (en evaluación y potenciales, hasta ${TDC.anioPlan})</span><span><i class="ln" style="border-top:3px dotted #4A4643"></i>Ideal hasta ${TDC.anioMeta}</span><span><i class="ln" style="border-top:2px solid #1A1A1A"></i>Meta</span>`;
+    $('[data-render="tdcLegend"]').innerHTML = `<span><i class="ln" style="border-top:3px solid ${s.ink}"></i>Logrado</span><span><i class="ln" style="border-top:3px dashed ${s.ink}"></i>Planificado (en evaluación y potenciales, hasta ${TDC.anioPlan})</span><span><i class="ln" style="border-top:3px dotted #4A4643"></i>Ideal hasta ${TDC.anioMeta}</span><span><i class="ln" style="border-top:2px solid #1A1A1A"></i>Meta</span><span><b style="font-family:var(--f-title)">+N</b> Nuevas: ciudades a sumar cada año para seguir el ideal</span>`;
     const pct = (v) => Math.round((v / s.meta) * 100);
     $('[data-render="tdcKpis"]').innerHTML = [
       [s.V0, `Logrado ${TDC.anioBase}`, `${pct(s.V0)}% de la meta`],
