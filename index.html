@@ -493,11 +493,7 @@ body[data-sec="mapa"] { --acc: var(--c-mapa); }
 .tile .t-here { display: none; font-family: var(--f-title); font-weight: 800; font-size: 11px; letter-spacing: 1px; text-transform: uppercase; background: var(--tc); color: #fff; border-radius: var(--r); padding: 2px 8px; }
 .tile[aria-current="page"] .t-here { display: inline-block; }
 
-.hero-head { display: flex; align-items: center; gap: 24px; margin-bottom: 6px; }
-.hero-head .hero-logo { margin-top: 18px; }
-.hero-head h1 { margin-bottom: 0; }
-.hero-logo { height: 92px; width: auto; display: block; flex: none; }
-@media (max-width: 680px) { .hero-head { gap: 12px; } .hero-logo { height: 62px; } .hero-head .label { flex-wrap: nowrap; align-items: flex-start; } .hero-head .label .dot { flex: none; margin-top: 4px; } }
+.hero-logo { height: 70px; width: auto; display: block; margin-bottom: 14px; }
 
 /* ---------- Sellos ---------- */
 .s-growth { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; }
@@ -906,8 +902,6 @@ body[data-sec="gestion"] { --acc: var(--c-gi); }
 .tc-nv { font-family: var(--f-title); font-weight: 800; font-size: 15px; fill: #4A4643; }
 .tc-nv.hito { fill: #A3323E; }
 .tc-nv-l { font-family: var(--f-title); font-weight: 700; font-size: 11px; text-transform: uppercase; letter-spacing: .6px; fill: #6F6A64; }
-.hero-head > div { flex: 0 1 auto; min-width: 0; }
-.hero-head h1 { max-width: 6.8em; }
 </style>
 </head>
 <body>
@@ -1000,13 +994,9 @@ body[data-sec="gestion"] { --acc: var(--c-gi); }
   <!-- 1. Objetivo -->
   <section class="section hero" id="objetivo" aria-labelledby="t-objetivo">
     <div>
-      <div class="hero-head">
-        <div>
-          <div class="label"><span class="dot"></span><span data-text="programaNombre"></span></div>
-          <h1 id="t-objetivo" data-html="titulo"></h1>
-        </div>
-        <img class="hero-logo" data-logo="cc" alt="100 Ciudades Certificadas">
-      </div>
+      <img class="hero-logo" data-logo="cc" alt="100 Ciudades Certificadas">
+      <div class="label"><span class="dot"></span><span data-text="programaNombre"></span></div>
+      <h1 id="t-objetivo" data-html="titulo"></h1>
       <p class="subtitle" data-text="bajada"></p>
       <div data-list="objetivo"></div>
       <div class="cta-row">
