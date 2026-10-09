@@ -902,6 +902,9 @@ body[data-sec="gestion"] { --acc: var(--c-gi); }
 .tc-nv { font-family: var(--f-title); font-weight: 800; font-size: 15px; fill: #4A4643; }
 .tc-nv.hito { fill: #A3323E; }
 .tc-nv-l { font-family: var(--f-title); font-weight: 700; font-size: 11px; text-transform: uppercase; letter-spacing: .6px; fill: #6F6A64; }
+.m-pob .pob-proy { grid-column: 1 / -1; display: flex; gap: 10px; align-items: flex-start; background: #F3EEE5; border-left: 4px solid var(--c-pot); border-radius: var(--r); padding: 10px 14px; font-size: 14px; }
+.m-pob .pob-proy svg { width: 18px; height: 18px; flex: none; color: var(--c-pot); margin-top: 2px; }
+.m-pob .pob-proy b { color: var(--black); }
 </style>
 </head>
 <body>
@@ -3235,13 +3238,16 @@ const MAPA_AR = {"proj": {"minx": -73.568399, "maxy": -21.786938, "k": 0.7880107
     const masDeUno = [...ciudades.values()].filter((rs) => rs.length > 1).length;
     const procs = procMapaFiltrados(), porProc = agrupar(procs);
     const cEst = (e) => new Set(procs.filter((p) => p.est === e).map((p) => p.key)).size, nEst = (e) => procs.filter((p) => p.est === e).length;
+    // Detalle de en evaluación / potenciales: cuántas certificaciones y cuántos sellos
+    const detProc = (e) => { const ps = procs.filter((p) => p.est === e), c = ps.filter((p) => p.tipo === "cert").length, sl = ps.length - c;
+      return `${c} ${c === 1 ? "certificación" : "certificaciones"} · ${sl} ${sl === 1 ? "sello" : "sellos"}`; };
     $('[data-render="mKpis"]').innerHTML = [
       [ciudades.size, "Ciudades reconocidas", "Cada ciudad cuenta una vez"],
       [recs.length, "Reconocimientos", `${recs.filter((r) => r.tipo === "cert").length} certificaciones · ${recs.filter((r) => r.tipo === "sello").length} sellos`],
       [provs.size, "Provincias", "Con al menos una ciudad reconocida"],
       [masDeUno, "Con más de un reconocimiento", "Ciudades"],
-      [cEst("eval"), ESTADOS_PROCESO.eval.kpi, `${nEst("eval")} ${nEst("eval") === 1 ? "reconocimiento en curso" : "reconocimientos en curso"}`, "eval"],
-      [cEst("pot"), ESTADOS_PROCESO.pot.kpi, `${nEst("pot")} ${nEst("pot") === 1 ? "reconocimiento posible" : "reconocimientos posibles"}`, "pot"]
+      [cEst("eval"), ESTADOS_PROCESO.eval.kpi, detProc("eval"), "eval"],
+      [cEst("pot"), ESTADOS_PROCESO.pot.kpi, detProc("pot"), "pot"]
     ].map(([v, l, s, c]) => `<div class="card accent kpi ${c || "rec"}"><div class="v">${v}</div><div class="l">${l}</div><div class="s">${s}</div></div>`).join("");
     const filtrando = f.q || f.prov || f.region || f.partido || f.anio || f.tam || f.tipo || f.sello || !f.est.rec || !f.est.eval || !f.est.pot;
     const tot = new Set((estado.recs || []).map((r) => r.key)).size;
@@ -3251,7 +3257,7 @@ const MAPA_AR = {"proj": {"minx": -73.568399, "maxy": -21.786938, "k": 0.7880107
     bindAll("mResultadosCorto", `(${ciudades.size})`);
     $("#m-limpiar").hidden = !filtrando;
     renderMapa(recs);
-    renderPoblacion(recs); renderConclusiones();
+    renderPoblacion(recs, procs); renderConclusiones();
     renderGraficos(recs, procs);
     estado.procSolo = agrupar(procs.filter((p) => !ciudades.has(p.key)));
     estado.procTodas = agrupar(procs);   // en gris en "Ciudades por provincia": todas las ciudades en evaluación o con potencial
@@ -3522,15 +3528,24 @@ const MAPA_AR = {"proj": {"minx": -73.568399, "maxy": -21.786938, "k": 0.7880107
   const pobDeKeys = (keys) => { let p = 0, sin = []; keys.forEach((k) => { const c = estado.fichas.get(k); if (c && c.pob != null) p += c.pob; else if (c) sin.push(c.ciudad); }); return { p, sin }; };
 
   // Número grande: personas que viven en ciudades reconocidas (se recalcula con los filtros)
-  function renderPoblacion(recs) {
+  function renderPoblacion(recs, procs) {
     const el = $('[data-render="mPob"]'); if (!el) return;
     const keys = new Set(recs.map((r) => r.key)), kc = new Set(recs.filter((r) => r.tipo === "cert").map((r) => r.key));
     const T = pobDeKeys(keys), C = pobDeKeys(kc), tot = POBLACION_PAIS.total;
     el.innerHTML = keys.size ? `<div class="pob-num"><b>${fmtMill(T.p)}</b><span>de personas viven en ciudades reconocidas por RIL</span></div>
       <div class="pob-det"><div><b>${pct1((T.p / tot) * 100)}</b><span>de la población del país</span></div>
       <div><b>${fmtMill(C.p)}</b><span>en ciudades certificadas (${pct1((C.p / tot) * 100)})</span></div></div>
-      <p class="pob-nota">Población de cada ciudad según la pestaña "Ciudades"; total del país: ${tot.toLocaleString("es-AR")} habitantes (${POBLACION_PAIS.fuente}). No incluye ciudades en proceso.${T.sin.length ? ` Sin población cargada: ${esc(T.sin.join(", "))}.` : ""}</p>`
+      ${proy2027(keys, procs || [], tot)}
+      <p class="pob-nota">Población de cada ciudad según la pestaña "Ciudades"; total del país: ${tot.toLocaleString("es-AR")} habitantes (${POBLACION_PAIS.fuente}). Los números grandes no incluyen ciudades en proceso.${T.sin.length ? ` Sin población cargada: ${esc(T.sin.join(", "))}.` : ""}</p>`
       : `<div class="pob-num"><b>0</b><span>personas en ciudades reconocidas con estos filtros</span></div>`;
+  }
+
+  // Proyección: población alcanzada si se suman las ciudades en evaluación y potenciales con entrega estimada hasta TDC.anioPlan
+  function proy2027(keys, procs, tot) {
+    const anio = TDC.anioPlan, nuevas = new Set(procs.filter((p) => (!p.anio || p.anio <= anio) && !keys.has(p.key)).map((p) => p.key));
+    if (!nuevas.size) return "";
+    const todas = new Set([...keys, ...nuevas]), P = pobDeKeys(todas), N = pobDeKeys(nuevas);
+    return `<div class="pob-proy">${svg("subir")}<span><b>Proyección ${anio}:</b> sumando ${nuevas.size} ciudades en evaluación y potenciales con entrega estimada hasta ${anio} (${fmtMill(N.p)} de habitantes), llegaríamos a <b>${fmtMill(P.p)} de personas</b>, el <b>${pct1((P.p / tot) * 100)}</b> de la población del país.${N.sin.length ? ` Sin población cargada: ${esc(N.sin.join(", "))}.` : ""}</span></div>`;
   }
 
   // Leyenda "Lo que muestra el mapa": frases armadas a partir de todos los reconocimientos otorgados
